@@ -1,0 +1,17 @@
+<nav class="navbar" [class.open]="isMenuOpen">
+  <div class="container navbar-container">
+    <a routerLink="/" class="navbar-logo">WCLN</a>
+    
+    <button class="navbar-toggle" (click)="toggleMenu()" aria-label="Toggle navigation">
+      <span class="bar"></span>
+      <span class="bar"></span>
+      <span class="bar"></span>
+    </button>
+    
+    <div class="navbar-links" [class.active]="isMenuOpen">
+      <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Home</a>
+      <a routerLink="/visualization" routerLinkActive="active">Visualization</a>
+      <a routerLink="/statistics" routerLinkActive="active">Statistics</a>
+    </div>
+  </div>
+</nav>

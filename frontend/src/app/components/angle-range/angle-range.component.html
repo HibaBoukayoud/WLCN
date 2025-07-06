@@ -1,0 +1,15 @@
+<div class="angle-range-container">
+  <div class="angle-visualization">
+    <!-- Placeholder for angle visualization -->
+    <div class="angle-indicator" *ngIf="angleData">
+      <div class="angle-pointer" [style.transform]="'rotate(' + angleData?.angle + 'deg)'"></div>
+      <div class="angle-display">{{ angleData?.angle }}°</div>
+    </div>
+  </div>
+  
+  <div class="angle-info">
+    <div class="range-info">
+      <span>Range: {{ angleData?.range[0] }}° to {{ angleData?.range[1] }}°</span>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,31 @@
+<div class="target-counter-container">
+  <div class="targets-visualization">
+    <div class="radar-display">
+      <!-- Radar screen visualization -->
+      <div class="radar-screen">
+        <div class="radar-sweep"></div>
+        
+        <!-- Target indicators -->
+        <div *ngFor="let target of targetData?.targets" 
+             class="target-indicator"
+             [style.left.%]="50 + (target.angle / 180 * 40)"
+             [style.top.%]="50 - (target.distance / 200 * 40)">
+        </div>
+      </div>
+    </div>
+    
+    <div class="targets-info">
+      <div class="counter-card">
+        <div class="counter-title">Targets Detected</div>
+        <div class="counter-value">{{ targetData?.count || 0 }}</div>
+      </div>
+      
+      <div class="targets-list">
+        <div *ngFor="let target of targetData?.targets" class="target-item">
+          <span>Target #{{ target.id }}</span>
+          <span>{{ target.distance }}m @ {{ target.angle }}°</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

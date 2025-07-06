@@ -1,0 +1,72 @@
+.angle-range-container {
+  display: flex;
+  flex-direction: column;
+  height: 250px;
+}
+
+.angle-visualization {
+  flex: 1;
+  background-color: rgba(10, 37, 64, 0.05);
+  border-radius: var(--border-radius-sm);
+  padding: var(--spacing-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.angle-indicator {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  border: 2px solid var(--primary-color);
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.angle-pointer {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 75px;
+  height: 4px;
+  background-color: var(--accent-color);
+  transform-origin: left center;
+  transition: transform 0.5s ease-out;
+  border-radius: 2px;
+}
+
+.angle-pointer::after {
+  content: '';
+  position: absolute;
+  right: -4px;
+  top: -4px;
+  width: 12px;
+  height: 12px;
+  background-color: var(--accent-color);
+  border-radius: 50%;
+}
+
+.angle-display {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--primary-color);
+  background-color: rgba(255, 255, 255, 0.7);
+  padding: 5px;
+  border-radius: var(--border-radius-sm);
+}
+
+.angle-info {
+  margin-top: var(--spacing-md);
+  display: flex;
+  justify-content: space-between;
+}
+
+.range-info {
+  font-size: 0.9rem;
+  color: var(--dark-gray);
+}
+
+/* TODO: implement animation */
