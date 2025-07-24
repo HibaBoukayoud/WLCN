@@ -2,17 +2,7 @@
   <div class="doppler-visualization">
     <!-- Placeholder for Doppler visualization -->
     <div class="doppler-bar-container">
-      <div *ngFor="let value of dopplerData?.values; let i = index" 
-           class="doppler-bar"
-           [style.height.%]="value"
-           [style.animation-delay.ms]="i * 100">
-      </div>
-    </div>
-  </div>
-  
-  <div class="doppler-info">
-    <div class="range-info">
-      <span>Range: {{ dopplerData?.range[0] }} - {{ dopplerData?.range[1] }}</span>
+      
     </div>
   </div>
 </div>

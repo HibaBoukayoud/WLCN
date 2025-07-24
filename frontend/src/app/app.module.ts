@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { HttpClientModule } from '@angular/common/http';
+import { RouterModule } from '@angular/router';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -12,7 +13,6 @@ import { StatisticsComponent } from './pages/statistics/statistics.component';
 import { DopplerRangeComponent } from './components/doppler-range/doppler-range.component';
 import { AngleRangeComponent } from './components/angle-range/angle-range.component';
 import { TargetCounterComponent } from './components/target-counter/target-counter.component';
-import { TargetChartComponent } from './components/target-chart/target-chart.component';
 
 @NgModule({
   declarations: [
@@ -24,12 +24,12 @@ import { TargetChartComponent } from './components/target-chart/target-chart.com
     StatisticsComponent,
     DopplerRangeComponent,
     AngleRangeComponent,
-    TargetCounterComponent,
-    TargetChartComponent
+    TargetCounterComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
+    RouterModule,
     HttpClientModule
   ],
   providers: [],

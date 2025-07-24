@@ -20,7 +20,6 @@ export class TargetCounterComponent implements OnInit, OnDestroy {
     ).subscribe({
       next: (data) => {
         this.targetData = data;
-        // TODO: implement animation when target count changes
       },
       error: (error) => {
         console.error('Error fetching target data:', error);

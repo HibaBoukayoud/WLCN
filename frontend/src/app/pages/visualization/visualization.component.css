@@ -30,6 +30,10 @@
   grid-column: span 2;
 }
 
+.target-counter-card h2 {
+  text-align: center;
+}
+
 @media (max-width: 768px) {
   .visualization-grid {
     grid-template-columns: 1fr;

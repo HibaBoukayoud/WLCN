@@ -4,6 +4,7 @@ import pyqtgraph as pg # Libreria per la visualizzazione grafica interattiva
 # from colormap import get_jet_colormap
 
 from pyqtgraph import QtCore
+import json # Libreria per la gestione dei file JSON, utile per il salvataggio e il caricamento dei dati in formato JSON.
 
 from Classes.FileReader_class import fileReader ; FR = fileReader()
 from Classes.LivePlot_class import LivePlot ; #LP = LivePlot() no need, already in main
@@ -18,6 +19,6 @@ if __name__ == "__main__": # Questa riga assicura che il codice venga eseguito s
     RD_list = data[1] # 1 è il numero di target
     #print(f"Total frames: {len(RD_list)}") # Check the number of frames
 
-    plot = LivePlot(RD_list)  # Initialize the plot
-    plot.start()              # Now start the event loop
-    
+    chart_data = LivePlot(RD_list)  # Initialize the plot
+    chart_data.start()              # Now start the event loop
+    print(json.dumps(chart_data, indent=2))

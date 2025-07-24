@@ -7,7 +7,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Middleware
-app.use(cors());
+app.use(cors()); // Permette al frontend di chiamare il backend
 app.use(express.json());
 
 // Helper function to run Python scripts
@@ -16,7 +16,7 @@ const runPythonScript = async (scriptName: string): Promise<any> => {
     scriptPath: path.join(__dirname, '../python-scripts')
   };
   
-  try {
+  try { // Esegue lo script Python e cattura l'output
     const result = await PythonShell.run(scriptName, options);
     return { success: true, data: result };
   } catch (error) {
@@ -45,7 +45,7 @@ app.get('/api/angle', async (_req: Request, res: Response) => {
     const result = await runPythonScript('angle.py');
     if (result.success) {
       // TODO: Process actual data from Python script
-      res.json({ angle: 45, range: [-90, 90] });
+      res.json({ angle: 70, range: [-90, 90] });
     } else {
       res.status(500).json({ error: 'Failed to execute Python script' });
     }
@@ -76,20 +76,22 @@ app.get('/api/chart-data', async (_req: Request, res: Response) => {
   try {
     const result = await runPythonScript('chart-data.py');
     if (result.success) {
-      // TODO: Process actual data from Python script
+      // Parse the JSON output from Python script
+      const pythonOutput = result.data.join('');
+      const chartData = JSON.parse(pythonOutput);
+      
       res.json({
-        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-        datasets: [
-          {
-            label: 'Targets Detected',
-            data: [12, 19, 3, 5, 2, 3]
-          }
-        ]
+        hours: chartData.hours,
+        targets: chartData.targets,
+        total_detections: chartData.total_detections,
+        peak_hour: chartData.peak_hour,
+        avg_per_hour: chartData.avg_per_hour
       });
     } else {
       res.status(500).json({ error: 'Failed to execute Python script' });
     }
   } catch (error) {
+    console.error('Error processing chart data:', error);
     res.status(500).json({ error: 'Server error' });
   }
 });
