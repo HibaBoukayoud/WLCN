@@ -12,15 +12,23 @@ app.use(express.json());
 
 // Helper function to run Python scripts
 const runPythonScript = async (scriptName: string): Promise<any> => {
+  const scriptPath = path.join(__dirname, '../python-scripts');
+  console.log('Script path:', scriptPath);
+  console.log('Running script:', scriptName);
+  console.log('Full path:', path.join(scriptPath, scriptName));
+  
   const options = {
-    scriptPath: path.join(__dirname, '../python-scripts')
+    scriptPath: scriptPath,
+    pythonPath: 'python', // You might need to specify the full Python path
   };
   
   try { // Esegue lo script Python e cattura l'output
     const result = await PythonShell.run(scriptName, options);
+    console.log('Python script executed successfully, output:', result);
     return { success: true, data: result };
   } catch (error) {
     console.error(`Error running ${scriptName}:`, error);
+    console.error('Error details:', (error as any).message);
     return { success: false, error: error };
   }
 };
@@ -73,12 +81,18 @@ app.get('/api/targets', async (_req: Request, res: Response) => {
 });
 
 app.get('/api/chart-data', async (_req: Request, res: Response) => {
+  console.log('Chart data endpoint called');
   try {
+    console.log('Running Python script: chart-data.py');
     const result = await runPythonScript('chart-data.py');
+    console.log('Python script result:', result);
+    
     if (result.success) {
       // Parse the JSON output from Python script
       const pythonOutput = result.data.join('');
+      console.log('Python output:', pythonOutput);
       const chartData = JSON.parse(pythonOutput);
+      console.log('Parsed chart data:', chartData);
       
       res.json({
         hours: chartData.hours,
@@ -88,6 +102,7 @@ app.get('/api/chart-data', async (_req: Request, res: Response) => {
         avg_per_hour: chartData.avg_per_hour
       });
     } else {
+      console.error('Python script failed:', result.error);
       res.status(500).json({ error: 'Failed to execute Python script' });
     }
   } catch (error) {

@@ -24,6 +24,7 @@ export class DataService {
   }
 
   getChartData(): Observable<any> {
+    console.log('Making HTTP request to:', `${this.apiUrl}/chart-data`);
     return this.http.get(`${this.apiUrl}/chart-data`);
   }
 }

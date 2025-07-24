@@ -21,18 +21,26 @@ export class StatisticsComponent implements OnInit {
   constructor(private dataService: DataService) { }
 
   ngOnInit(): void {
+    console.log('Statistics component initialized');
     this.loadChartData();
   }
 
   private loadChartData(): void {
+    console.log('Loading chart data from API...');
     this.dataService.getChartData().subscribe({
       next: (data: ChartData) => {
-        console.log('Chart data:', data);
+        console.log('Chart data received successfully:', data);
+        console.log('Data type:', typeof data);
+        console.log('Data keys:', Object.keys(data));
+        console.log('Targets property:', data.targets);
+        console.log('Targets type:', typeof data.targets);
         this.chartData = data;
         this.generateChartPoints();
+        console.log('Chart points generated:', this.chartPoints);
       },
       error: (error) => {
         console.error('Error fetching chart data:', error);
+        console.error('Error details:', error.message, error.status);
         // Fallback to default data if API fails
         this.setDefaultData();
       }
@@ -40,7 +48,23 @@ export class StatisticsComponent implements OnInit {
   }
 
   private generateChartPoints(): void {
-    if (!this.chartData) return;
+    console.log('generateChartPoints called');
+    console.log('chartData:', this.chartData);
+    
+    if (!this.chartData) {
+      console.error('chartData is null or undefined');
+      return;
+    }
+    
+    if (!this.chartData.targets) {
+      console.error('chartData.targets is undefined:', this.chartData);
+      return;
+    }
+    
+    if (!Array.isArray(this.chartData.targets)) {
+      console.error('chartData.targets is not an array:', this.chartData.targets);
+      return;
+    }
     
     const points: string[] = [];
     const maxTargets = 8;
@@ -54,6 +78,7 @@ export class StatisticsComponent implements OnInit {
     });
     
     this.chartPoints = points.join(' ');
+    console.log('Chart points generated successfully:', this.chartPoints);
   }
 
   private setDefaultData(): void {
