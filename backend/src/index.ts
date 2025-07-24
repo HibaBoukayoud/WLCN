@@ -35,15 +35,29 @@ const runPythonScript = async (scriptName: string): Promise<any> => {
 
 // API Routes
 app.get('/api/doppler', async (_req: Request, res: Response) => {
+  console.log('Doppler endpoint called');
   try {
+    console.log('Running Python script: doppler.py');
     const result = await runPythonScript('doppler.py');
+    console.log('Python script result:', result);
+    
     if (result.success) {
-      // TODO: Process actual data from Python script
-      res.json({ range: [0, 100], values: [25, 30, 45, 60, 75] });
+      // Parse the JSON output from Python script
+      const pythonOutput = result.data.join('');
+      console.log('Python output:', pythonOutput);
+      const dopplerData = JSON.parse(pythonOutput);
+      console.log('Parsed doppler data:', dopplerData);
+      
+      res.json({
+        hours: dopplerData.hours,
+        distances: dopplerData.distances
+      });
     } else {
+      console.error('Python script failed:', result.error);
       res.status(500).json({ error: 'Failed to execute Python script' });
     }
   } catch (error) {
+    console.error('Error processing doppler data:', error);
     res.status(500).json({ error: 'Server error' });
   }
 });

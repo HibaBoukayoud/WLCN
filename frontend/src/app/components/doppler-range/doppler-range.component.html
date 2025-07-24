@@ -1,8 +1,89 @@
 <div class="doppler-range-container">
+  <div class="doppler-header">
+    <h3>Distance vs Hours</h3>
+  </div>
+  
   <div class="doppler-visualization">
-    <!-- Placeholder for Doppler visualization -->
-    <div class="doppler-bar-container">
+    <div class="chart-container" *ngIf="dopplerData && chartPoints">
+      <div class="chart-content">
+        <!-- Y-axis labels (Distance 0-5m) -->
+        <div class="y-axis">
+          <span class="y-label">0m</span>
+          <span class="y-label">1m</span>
+          <span class="y-label">2m</span>
+          <span class="y-label">3m</span>
+          <span class="y-label">4m</span>
+          <span class="y-label">5m</span>
+        </div>
+        
+        <!-- Chart area -->
+        <div class="chart-area">
+          <!-- Grid lines -->
+          <div class="grid-lines">
+            <!-- Horizontal grid lines -->
+            <div class="grid-line horizontal" style="bottom: 0%"></div>
+            <div class="grid-line horizontal" style="bottom: 20%"></div>
+            <div class="grid-line horizontal" style="bottom: 40%"></div>
+            <div class="grid-line horizontal" style="bottom: 60%"></div>
+            <div class="grid-line horizontal" style="bottom: 80%"></div>
+            <div class="grid-line horizontal" style="bottom: 100%"></div>
+            
+            <!-- Vertical grid lines (one for each hour 0-23) -->
+            <div class="grid-line vertical" style="left: 0%"></div>
+            <div class="grid-line vertical" style="left: 4.35%"></div>
+            <div class="grid-line vertical" style="left: 8.7%"></div>
+            <div class="grid-line vertical" style="left: 13.04%"></div>
+            <div class="grid-line vertical" style="left: 17.39%"></div>
+            <div class="grid-line vertical" style="left: 21.74%"></div>
+            <div class="grid-line vertical" style="left: 26.09%"></div>
+            <div class="grid-line vertical" style="left: 30.43%"></div>
+            <div class="grid-line vertical" style="left: 34.78%"></div>
+            <div class="grid-line vertical" style="left: 39.13%"></div>
+            <div class="grid-line vertical" style="left: 43.48%"></div>
+            <div class="grid-line vertical" style="left: 47.83%"></div>
+            <div class="grid-line vertical" style="left: 52.17%"></div>
+            <div class="grid-line vertical" style="left: 56.52%"></div>
+            <div class="grid-line vertical" style="left: 60.87%"></div>
+            <div class="grid-line vertical" style="left: 65.22%"></div>
+            <div class="grid-line vertical" style="left: 69.57%"></div>
+            <div class="grid-line vertical" style="left: 73.91%"></div>
+            <div class="grid-line vertical" style="left: 78.26%"></div>
+            <div class="grid-line vertical" style="left: 82.61%"></div>
+            <div class="grid-line vertical" style="left: 86.96%"></div>
+            <div class="grid-line vertical" style="left: 91.3%"></div>
+            <div class="grid-line vertical" style="left: 95.65%"></div>
+            <div class="grid-line vertical" style="left: 100%"></div>
+          </div>
+          
+          <!-- Data line -->
+          <svg class="line-graph" [attr.viewBox]="'0 0 ' + chartWidth + ' ' + chartHeight" preserveAspectRatio="none">
+            <polyline [attr.points]="chartPoints" 
+                    fill="none" 
+                    stroke="#00d4ff" 
+                    stroke-width="2"/>
+            
+            <!-- Data points -->
+            <circle *ngFor="let hour of dopplerData.hours; let i = index"
+                   [attr.cx]="(hour / 23) * chartWidth"
+                   [attr.cy]="(dopplerData.distances[i] / 5) * chartHeight"
+                   r="3" 
+                   fill="#00d4ff"/>
+          </svg>
+        </div>
+      </div>
       
+      <!-- X-axis labels (Hours) -->
+      <div class="x-axis">
+        <span class="x-label">0h</span>
+        <span class="x-label">6h</span>
+        <span class="x-label">12h</span>
+        <span class="x-label">18h</span>
+        <span class="x-label">24h</span>
+      </div>
+    </div>
+    
+    <div class="loading" *ngIf="!dopplerData">
+      Loading data...
     </div>
   </div>
 </div>

@@ -1,25 +1,130 @@
 .doppler-range-container {
   display: flex;
   flex-direction: column;
-  height: 250px;
+  height: 300px;
+  padding: 16px;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
-.doppler-visualization {
+.doppler-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.doppler-header h3 {
+  margin: 0;
+  color: #0a2540;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.doppler-info {
+  display: flex;
+  gap: 16px;
+  font-size: 12px;
+  color: #666;
+}
+
+.doppler-info span {
+  background-color: #f0f8ff;
+  padding: 4px 8px;
+  border-radius: 4px;
+  border: 1px solid #00d4ff;
+}
+
+.chart-container {
+  display: flex;
+  flex-direction: column;
+  height: 200px;
+  gap: 8px;
+}
+
+.chart-content {
+  display: flex;
+  gap: 8px;
   flex: 1;
-  background-color: rgba(10, 37, 64, 0.05);
-  border-radius: var(--border-radius-sm);
-  padding: var(--spacing-md);
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-around;
 }
 
-.doppler-bar-container {
+.y-axis {
   display: flex;
-  align-items: flex-end;
-  justify-content: space-around;
+  flex-direction: column-reverse;
+  justify-content: space-between;
+  width: 40px;
+  padding-right: 8px;
+}
+
+.y-label {
+  font-size: 10px;
+  color: #666;
+  text-align: right;
+}
+
+.chart-area {
+  flex: 1;
+  position: relative;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  background-color: #fafafa;
+}
+
+.grid-lines {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+.grid-line {
+  position: absolute;
+  background-color: #e0e0e0;
+}
+
+.grid-line.horizontal {
+  left: 0;
+  right: 0;
+  height: 1px;
+}
+
+.grid-line.vertical {
+  top: 0;
+  bottom: 0;
+  width: 1px;
+}
+
+.line-graph {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   width: 100%;
   height: 100%;
+}
+
+.x-axis {
+  display: flex;
+  justify-content: space-between;
+  margin-left: 48px;
+}
+
+.x-label {
+  font-size: 10px;
+  color: #666;
+  text-align: center;
+}
+
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: #666;
+  font-style: italic;
 }
 
 .doppler-bar {
