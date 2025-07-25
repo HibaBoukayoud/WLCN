@@ -1,23 +1,16 @@
+import numpy as np
 import json
-import random
 
-def generate_doppler_data():
-    # Genera 24 punti per le 24 ore
-    hours = []
-    distances = []
-    
-    for hour in range(24):
-        hours.append(hour)
-        # Distanza casuale da 0 a 5 metri
-        distance = random.uniform(0, 5)
-        distances.append(round(distance, 1))
+def generate_heatmap_data():
+    # Genera una matrice 5x5 di dati casuali
+    dati = np.random.rand(5, 5).tolist()
     
     return {
-        "hours": hours,
-        "distances": distances
+        "data": dati,
+        "title": "Heatmap",
+        "color_map": "hot"
     }
 
 if __name__ == "__main__":
-    doppler_data = generate_doppler_data()
-    print(json.dumps(doppler_data, indent=2))
-
+    heatmap_data = generate_heatmap_data()
+    print(json.dumps(heatmap_data, indent=2))

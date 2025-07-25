@@ -1,15 +1,8 @@
 <div class="target-counter-container">
   <div class="targets-info">
     <div class="counter-card">
-      <div class="counter-title">Targets Detected</div>
+      <div class="counter-title">Detected Targets</div>
       <div class="counter-value">{{ targetData?.count || 0 }}</div>
-    </div>
-    
-    <div class="targets-list">
-      <div *ngFor="let target of targetData?.targets" class="target-item">
-        <span>Target #{{ target.id }}</span>
-        <span>{{ target.distance }}m @ {{ target.angle }}°</span>
-      </div>
     </div>
   </div>
 </div>

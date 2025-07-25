@@ -49,8 +49,9 @@ app.get('/api/doppler', async (_req: Request, res: Response) => {
       console.log('Parsed doppler data:', dopplerData);
       
       res.json({
-        hours: dopplerData.hours,
-        distances: dopplerData.distances
+        data: dopplerData.data,
+        title: dopplerData.title,
+        color_map: dopplerData.color_map
       });
     } else {
       console.error('Python script failed:', result.error);
