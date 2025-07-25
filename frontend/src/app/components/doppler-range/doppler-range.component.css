@@ -135,11 +135,11 @@
 
 .heatmap-grid {
   display: grid;
-  gap: 1px;
+  gap: 0px; /* Rimosso gap per eliminare linee bianche */
   flex: 1;
   border: 2px solid #333;
   border-radius: 4px;
-  padding: 4px;
+  padding: 2px; /* Ridotto padding */
   background-color: #f9f9f9;
   max-height: 500px;
   max-width: 500px;
@@ -148,7 +148,7 @@
 
 .heatmap-cell {
   display: block;
-  border-radius: 1px;
+  border-radius: 0px; /* Rimosso border-radius per eliminare spazi */
   cursor: pointer;
   transition: transform 0.1s;
   min-height: 2px;
@@ -174,7 +174,7 @@
 
 .color-gradient {
   width: 20px;
-  height: 300px;
+  height: 500px; /* Aumentata per corrispondere all'altezza della griglia */
   background: linear-gradient(to top, 
     rgb(68, 1, 84),     /* Viola scuro */
     rgb(59, 82, 139),   /* Blu */
@@ -191,7 +191,7 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  height: 300px;
+  height: 500px; /* Aumentata per corrispondere all'altezza della griglia */
   font-size: 10px;
   color: #666;
   text-align: center;

@@ -63,9 +63,16 @@ export class DopplerRangeComponent implements OnInit, OnDestroy {
     console.log('Total frames:', this.totalFrames);
     
     if (this.totalFrames > 0) {
-      this.rows = rangeData[0].length;
-      this.cols = rangeData[0][0].length;
-      console.log('Frame dimensions:', this.rows, 'x', this.cols);
+      // Dimensioni originali
+      const originalRows = rangeData[0].length;
+      const originalCols = rangeData[0][0].length;
+      
+      // Dopo la trasposizione, le dimensioni si scambiano
+      this.rows = originalCols;  // Le colonne diventano righe
+      this.cols = originalRows;  // Le righe diventano colonne
+      
+      console.log('Original dimensions:', originalRows, 'x', originalCols);
+      console.log('Transposed dimensions:', this.rows, 'x', this.cols);
       
       // Calcola min/max su tutti i frame
       this.calculateGlobalMinMax();
@@ -93,8 +100,31 @@ export class DopplerRangeComponent implements OnInit, OnDestroy {
   private showFrame(frameIndex: number): void {
     if (!this.dopplerData || frameIndex >= this.totalFrames) return;
     
-    this.currentFrame = this.dopplerData['Range-Doppler Map'][frameIndex];
+    // Ottieni il frame originale
+    let frame = this.dopplerData['Range-Doppler Map'][frameIndex];
+    
+    // Applica la trasposizione per ruotare di 90 gradi
+    this.currentFrame = this.transposeMatrix(frame);
     this.generateHeatmapCells();
+  }
+
+  // Funzione per trasporre una matrice (ruota di 90 gradi)
+  private transposeMatrix(matrix: number[][]): number[][] {
+    if (!matrix || matrix.length === 0) return matrix;
+    
+    const rows = matrix.length;
+    const cols = matrix[0].length;
+    const transposed: number[][] = [];
+    
+    // Crea la matrice trasposta: [i][j] diventa [j][i]
+    for (let j = 0; j < cols; j++) {
+      transposed[j] = [];
+      for (let i = 0; i < rows; i++) {
+        transposed[j][i] = matrix[i][j];
+      }
+    }
+    
+    return transposed;
   }
 
   // Metodi di controllo animazione (come LivePlot_class.py)
