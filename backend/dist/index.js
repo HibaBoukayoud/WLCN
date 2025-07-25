@@ -47,9 +47,7 @@ app.get('/api/doppler', async (_req, res) => {
             const dopplerData = JSON.parse(pythonOutput);
             console.log('Parsed doppler data:', dopplerData);
             res.json({
-                data: dopplerData.data,
-                title: dopplerData.title,
-                color_map: dopplerData.color_map
+                "Range-Doppler Map": dopplerData["Range-Doppler Map"]
             });
         }
         else {

@@ -2,9 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { DataService } from '../../services/data.service';
 
 interface DopplerData {
-  data: number[][];
-  title: string;
-  color_map: string;
+  "Range-Doppler Map": number[][];
 }
 
 @Component({
@@ -25,18 +23,18 @@ export class DopplerRangeComponent implements OnInit {
   }
 
   fetchDopplerData(): void {
-    console.log('Fetching Doppler heatmap data...');
+    console.log('Fetching Range-Doppler Map data...');
     console.log('Making request to data service...');
     this.dataService.getDoppler().subscribe({
       next: (data: DopplerData) => {
-        console.log('Doppler heatmap data received:', data);
+        console.log('Range-Doppler Map data received:', data);
         console.log('Data keys:', Object.keys(data));
-        console.log('Data.data:', data.data);
+        console.log('Range-Doppler Map:', data['Range-Doppler Map']);
         this.dopplerData = data;
         this.generateHeatmapCells();
       },
       error: (error) => {
-        console.error('Error fetching Doppler data:', error);
+        console.error('Error fetching Range-Doppler data:', error);
         console.error('Error status:', error.status);
         console.error('Error message:', error.message);
         console.error('Full error object:', error);
@@ -45,19 +43,20 @@ export class DopplerRangeComponent implements OnInit {
   }
 
   private generateHeatmapCells(): void {
-    if (!this.dopplerData || !this.dopplerData.data) {
-      console.error('Invalid heatmap data');
+    if (!this.dopplerData || !this.dopplerData['Range-Doppler Map']) {
+      console.error('Invalid Range-Doppler Map data');
       return;
     }
 
-    const flatData = this.dopplerData.data.flat();
+    const rangeData = this.dopplerData['Range-Doppler Map'];
+    const flatData = rangeData.flat();
     this.maxValue = Math.max(...flatData);
     this.minValue = Math.min(...flatData);
 
     this.heatmapCells = [];
     
-    this.dopplerData.data.forEach((row, rowIndex) => {
-      row.forEach((value, colIndex) => {
+    rangeData.forEach((row: number[], rowIndex: number) => {
+      row.forEach((value: number, colIndex: number) => {
         // Normalizza il valore tra 0 e 1
         const normalizedValue = (value - this.minValue) / (this.maxValue - this.minValue);
         
@@ -73,7 +72,7 @@ export class DopplerRangeComponent implements OnInit {
       });
     });
     
-    console.log('Heatmap cells generated:', this.heatmapCells.length);
+    console.log('Range-Doppler heatmap cells generated:', this.heatmapCells.length);
   }
 
   private getHeatmapColor(normalizedValue: number): string {

@@ -1,15 +1,21 @@
 <div class="doppler-range-container">
   <div class="doppler-header">
-    <h3>{{ dopplerData?.title || 'Heatmap' }}</h3>
+    <h3>Range-Doppler Map</h3>
     <div class="heatmap-info" *ngIf="dopplerData">
-      <span>Min: {{ minValue.toFixed(2) }}</span> <!-- Display minimum value -->
-      <span>Max: {{ maxValue.toFixed(2) }}</span> <!-- Display maximum value -->
-      <span>Color Map: {{ dopplerData.color_map }}</span> <!-- Display color map -->
+      <span>Min: {{ minValue.toFixed(2) }}</span>
+      <span>Max: {{ maxValue.toFixed(2) }}</span>
     </div>
   </div>
   
   <div class="doppler-visualization">
-    <div class="heatmap-container" *ngIf="dopplerData && heatmapCells.length > 0"> <!-- Check if heatmap data is available -->
+    <!-- Debug info -->
+    <div *ngIf="dopplerData" style="margin-bottom: 10px; font-size: 12px; color: #666;">
+      <p>Data received: ✓</p>
+      <p>Heatmap cells: {{ heatmapCells.length }}</p>
+      <p>Range-Doppler Map size: {{ dopplerData['Range-Doppler Map'] ? dopplerData['Range-Doppler Map'].length : 'N/A' }}</p>
+    </div>
+    
+    <div class="heatmap-container" *ngIf="dopplerData && heatmapCells.length > 0">
       <div class="heatmap-grid">
         <div *ngFor="let cell of heatmapCells" 
              class="heatmap-cell"
@@ -20,22 +26,14 @@
           <span class="cell-value">{{ cell.value.toFixed(2) }}</span>
         </div>
       </div>
-      
-      <!-- Color scale legend -->
-      <div class="color-legend">
-        <div class="legend-title">Color Scale</div>
-        <div class="legend-bar">
-          <div class="legend-gradient"></div>
-          <div class="legend-labels">
-            <span>{{ minValue.toFixed(2) }}</span>
-            <span>{{ maxValue.toFixed(2) }}</span>
-          </div>
-        </div>
-      </div>
     </div>
     
     <div class="loading" *ngIf="!dopplerData">
-      Loading heatmap data...
+      Loading data...
+    </div>
+    
+    <div *ngIf="dopplerData && heatmapCells.length === 0" style="color: red;">
+      Data received but no heatmap cells generated!
     </div>
   </div>
 </div>
