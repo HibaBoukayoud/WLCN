@@ -1,39 +1,77 @@
 <div class="doppler-range-container">
   <div class="doppler-header">
-    <h3>Range-Doppler Map</h3>
-    <div class="heatmap-info" *ngIf="dopplerData">
-      <span>Min: {{ minValue.toFixed(2) }}</span>
-      <span>Max: {{ maxValue.toFixed(2) }}</span>
+    <h3>Range-Doppler Map (Live Plot)</h3>
+    <div class="animation-controls" *ngIf="dopplerData">
+      <div class="frame-info">
+        <span>Frame: {{ currentFrameIndex + 1 }} / {{ totalFrames }}</span>
+        <span>Min: {{ minValue.toFixed(2) }}</span>
+        <span>Max: {{ maxValue.toFixed(2) }}</span>
+      </div>
+      
+      <div class="control-buttons">
+        <button (click)="startAnimation()" [disabled]="isAnimating" class="btn-play">
+          {{ isAnimating ? 'Playing...' : 'Play' }}
+        </button>
+        <button (click)="stopAnimation()" [disabled]="!isAnimating" class="btn-stop">Stop</button>
+        <button (click)="previousFrame()" [disabled]="isAnimating || currentFrameIndex === 0" class="btn-prev">◀</button>
+        <button (click)="nextFrame()" [disabled]="isAnimating || currentFrameIndex === totalFrames - 1" class="btn-next">▶</button>
+      </div>
+      
+      <div class="frame-slider">
+        <input type="range" 
+               [min]="0" 
+               [max]="totalFrames - 1" 
+               [value]="currentFrameIndex"
+               (input)="goToFrame($event)"
+               [disabled]="isAnimating"
+               class="frame-range">
+      </div>
+      
+      <div class="speed-control">
+        <label>Speed (ms): </label>
+        <input type="number" 
+               [(ngModel)]="animationSpeed" 
+               [min]="50" 
+               [max]="1000" 
+               [step]="50"
+               [disabled]="isAnimating">
+      </div>
     </div>
   </div>
   
   <div class="doppler-visualization">
-    <!-- Debug info -->
-    <div *ngIf="dopplerData" style="margin-bottom: 10px; font-size: 12px; color: #666;">
-      <p>Data received: ✓</p>
-      <p>Heatmap cells: {{ heatmapCells.length }}</p>
-      <p>Range-Doppler Map size: {{ dopplerData['Range-Doppler Map'] ? dopplerData['Range-Doppler Map'].length : 'N/A' }}</p>
-    </div>
-    
     <div class="heatmap-container" *ngIf="dopplerData && heatmapCells.length > 0">
-      <div class="heatmap-grid">
+      <div class="heatmap-grid" 
+           [style.grid-template-rows]="'repeat(' + rows + ', 1fr)'"
+           [style.grid-template-columns]="'repeat(' + cols + ', 1fr)'">
         <div *ngFor="let cell of heatmapCells" 
              class="heatmap-cell"
              [style.background-color]="cell.color"
              [style.grid-row]="cell.row + 1"
              [style.grid-column]="cell.col + 1"
-             [title]="'Row: ' + cell.row + ', Col: ' + cell.col + ', Value: ' + cell.value.toFixed(3)">
-          <span class="cell-value">{{ cell.value.toFixed(2) }}</span>
+             [title]="'Frame: ' + (currentFrameIndex + 1) + ', Row: ' + cell.row + ', Col: ' + cell.col + ', Value: ' + cell.value.toFixed(4)">
+        </div>
+      </div>
+      
+      <!-- Color Bar Legend -->
+      <div class="color-bar">
+        <div class="color-gradient"></div>
+        <div class="color-labels">
+          <span>{{ minValue.toFixed(2) }}</span>
+          <span>{{ ((minValue + maxValue) / 2).toFixed(2) }}</span>
+          <span>{{ maxValue.toFixed(2) }}</span>
         </div>
       </div>
     </div>
     
-    <div class="loading" *ngIf="!dopplerData">
-      Loading data...
+    <!-- Loading state -->
+    <div *ngIf="!dopplerData" class="loading-state">
+      <p>Loading Range-Doppler data...</p>
     </div>
     
-    <div *ngIf="dopplerData && heatmapCells.length === 0" style="color: red;">
-      Data received but no heatmap cells generated!
+    <!-- Error state -->
+    <div *ngIf="dopplerData && heatmapCells.length === 0" class="error-state">
+      <p>No data available or error loading Range-Doppler Map</p>
     </div>
   </div>
 </div>

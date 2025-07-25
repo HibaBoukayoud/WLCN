@@ -1,7 +1,7 @@
 .doppler-range-container {
   display: flex;
   flex-direction: column;
-  height: 500px;
+  height: 700px;
   padding: 20px;
   background-color: white;
   border-radius: 8px;
@@ -10,30 +10,114 @@
 
 .doppler-header {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  flex-direction: column;
+  gap: 12px;
   margin-bottom: 16px;
+  border-bottom: 2px solid #f0f0f0;
+  padding-bottom: 16px;
 }
 
 .doppler-header h3 {
   margin: 0;
   color: #0a2540;
-  font-size: 16px;
+  font-size: 18px;
   font-weight: 600;
 }
 
-.heatmap-info {
+.animation-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.frame-info {
   display: flex;
   gap: 16px;
   font-size: 12px;
   color: #666;
 }
 
-.heatmap-info span {
+.frame-info span {
   background-color: #f0f8ff;
   padding: 4px 8px;
   border-radius: 4px;
   border: 1px solid #00d4ff;
+}
+
+.control-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.control-buttons button {
+  padding: 6px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background-color: white;
+  cursor: pointer;
+  font-size: 12px;
+  transition: all 0.2s;
+}
+
+.control-buttons button:hover:not(:disabled) {
+  background-color: #f0f8ff;
+  border-color: #00d4ff;
+}
+
+.control-buttons button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-play {
+  background-color: #28a745 !important;
+  color: white;
+  border-color: #28a745 !important;
+}
+
+.btn-stop {
+  background-color: #dc3545 !important;
+  color: white;
+  border-color: #dc3545 !important;
+}
+
+.frame-slider {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.frame-range {
+  flex: 1;
+  height: 8px;
+  border-radius: 4px;
+  background: #ddd;
+  outline: none;
+  -webkit-appearance: none;
+}
+
+.frame-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #00d4ff;
+  cursor: pointer;
+}
+
+.speed-control {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+}
+
+.speed-control input {
+  width: 80px;
+  padding: 4px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
 }
 
 .doppler-visualization {
@@ -46,42 +130,80 @@
   display: flex;
   gap: 20px;
   flex: 1;
+  align-items: flex-start;
 }
 
 .heatmap-grid {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  grid-template-rows: repeat(5, 1fr);
-  gap: 3px;
+  gap: 1px;
   flex: 1;
-  border: 1px solid #ddd;
+  border: 2px solid #333;
   border-radius: 4px;
-  padding: 8px;
+  padding: 4px;
   background-color: #f9f9f9;
-  max-width: 450px;
+  max-height: 500px;
+  max-width: 500px;
+  overflow: hidden;
 }
 
 .heatmap-cell {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 3px;
+  display: block;
+  border-radius: 1px;
   cursor: pointer;
-  transition: transform 0.2s;
-  min-height: 80px;
-  min-width: 80px;
+  transition: transform 0.1s;
+  min-height: 2px;
+  min-width: 2px;
+  aspect-ratio: 1;
 }
 
 .heatmap-cell:hover {
-  transform: scale(1.05);
-  border: 2px solid #333;
+  transform: scale(1.5);
+  border: 1px solid #333;
+  z-index: 10;
+  position: relative;
 }
 
-.cell-value {
-  font-size: 11px;
-  font-weight: 600;
-  color: #333;
-  text-shadow: 1px 1px 1px rgba(255,255,255,0.5);
+/* Color Bar */
+.color-bar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 40px;
+  margin-left: 10px;
+}
+
+.color-gradient {
+  width: 20px;
+  height: 300px;
+  background: linear-gradient(to top, 
+    rgb(68, 1, 84),     /* Viola scuro */
+    rgb(59, 82, 139),   /* Blu */
+    rgb(33, 144, 140),  /* Verde scuro */
+    rgb(94, 201, 98),   /* Verde chiaro */
+    rgb(253, 231, 37)   /* Giallo */
+  );
+  border: 1px solid #333;
+  border-radius: 4px;
+  margin-bottom: 8px;
+}
+
+.color-labels {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 300px;
+  font-size: 10px;
+  color: #666;
+  text-align: center;
+}
+
+.loading-state, .error-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  color: #666;
+  font-style: italic;
 }
 
 .color-legend {
