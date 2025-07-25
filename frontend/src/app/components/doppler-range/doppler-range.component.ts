@@ -60,13 +60,16 @@ export class DopplerRangeComponent implements OnInit, OnDestroy {
 
     const rangeData = this.dopplerData['Range-Doppler Map'];
     this.totalFrames = rangeData.length;
+    console.log('Total frames:', this.totalFrames);
     
     if (this.totalFrames > 0) {
       this.rows = rangeData[0].length;
       this.cols = rangeData[0][0].length;
+      console.log('Frame dimensions:', this.rows, 'x', this.cols);
       
       // Calcola min/max su tutti i frame
       this.calculateGlobalMinMax();
+      console.log('Value range:', this.minValue, 'to', this.maxValue);
       
       // Mostra il primo frame
       this.currentFrameIndex = 0;
@@ -84,6 +87,7 @@ export class DopplerRangeComponent implements OnInit, OnDestroy {
     
     this.maxValue = Math.max(...allValues);
     this.minValue = Math.min(...allValues);
+    console.log('Sample values:', allValues.slice(0, 10)); // Mostra i primi 10 valori
   }
 
   private showFrame(frameIndex: number): void {

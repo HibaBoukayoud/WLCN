@@ -41,5 +41,5 @@ def extract_range_doppler(target_type=1, frame_index=0, max_frames=10):
     }
 
 if __name__ == "__main__": # Questa riga assicura che il codice venga eseguito solo se il file è eseguito direttamente, e non se viene importato in un altro script
-    rd_data = extract_range_doppler(target_type=1, frame_index=0, max_frames=5) # Chiama la funzione per estrarre solo 5 frame con target
+    rd_data = extract_range_doppler(target_type=1, frame_index=0, max_frames=5) # Chiama la funzione per estrarre solo 5 frame con 1 target (data[1])
     print(json.dumps(rd_data, indent=4)) # Stampa i dati estratti in formato JSON con indentazione per una migliore leggibilità
