@@ -137,13 +137,14 @@
   display: grid;
   gap: 0px; /* Rimosso gap per eliminare linee bianche */
   flex: 1;
-  border: 2px solid #333;
+  border: none;
   border-radius: 4px;
-  padding: 2px; /* Ridotto padding */
+  padding: 0px; /* Ridotto padding */
   background-color: #f9f9f9;
   max-height: 500px;
   max-width: 500px;
   overflow: hidden;
+  box-sizing: border-box;
 }
 
 .heatmap-cell {
@@ -151,9 +152,10 @@
   border-radius: 0px; /* Rimosso border-radius per eliminare spazi */
   cursor: pointer;
   transition: transform 0.1s;
-  min-height: 2px;
-  min-width: 2px;
-  aspect-ratio: 1;
+  min-height: 10px;
+  min-width: 10px;
+  width: 10px;
+  height: 10px;
 }
 
 .heatmap-cell:hover {
