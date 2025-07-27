@@ -24,7 +24,7 @@ const runPythonScript = async (scriptName) => {
     };
     try { // Esegue lo script Python e cattura l'output
         const result = await python_shell_1.PythonShell.run(scriptName, options);
-        console.log('Python script executed successfully, output:', result);
+        //console.log('Python script executed successfully, output:', result);
         return { success: true, data: result };
     }
     catch (error) {
@@ -39,13 +39,14 @@ app.get('/api/doppler', async (_req, res) => {
     try {
         console.log('Running Python script: doppler.py');
         const result = await runPythonScript('doppler.py');
-        console.log('Python script result:', result);
+        //console.log('Python script result:', result);
         if (result.success) {
+            console.log('Python script executed successfully');
             // Parse the JSON output from Python script
             const pythonOutput = result.data.join('');
-            console.log('Python output:', pythonOutput);
+            //console.log('Python output:', pythonOutput);
             const dopplerData = JSON.parse(pythonOutput);
-            console.log('Parsed doppler data:', dopplerData);
+            //console.log('Parsed doppler data:', dopplerData);
             res.json({
                 "Range-Doppler Map": dopplerData["Range-Doppler Map"]
             });
@@ -64,6 +65,7 @@ app.get('/api/angle', async (_req, res) => {
     try {
         const result = await runPythonScript('angle.py');
         if (result.success) {
+            console.log('Python script executed successfully');
             // TODO: Process actual data from Python script
             res.json({ angle: 70, range: [-90, 90] });
         }
@@ -79,12 +81,14 @@ app.get('/api/targets', async (_req, res) => {
     try {
         const result = await runPythonScript('targets.py');
         if (result.success) {
+            
             // TODO: Process actual data from Python script
             res.json({ count: 3, targets: [
                     { id: 1, distance: 50, angle: 30 },
                     { id: 2, distance: 75, angle: -15 },
                     { id: 3, distance: 120, angle: 60 }
                 ] });
+            console.log('Python script executed successfully');
         }
         else {
             res.status(500).json({ error: 'Failed to execute Python script' });
@@ -99,13 +103,14 @@ app.get('/api/chart-data', async (_req, res) => {
     try {
         console.log('Running Python script: chart-data.py');
         const result = await runPythonScript('chart-data.py');
-        console.log('Python script result:', result);
+        //console.log('Python script result:', result);
         if (result.success) {
+            console.log('Python script executed successfully');
             // Parse the JSON output from Python script
             const pythonOutput = result.data.join('');
-            console.log('Python output:', pythonOutput);
+            //console.log('Python output:', pythonOutput);
             const chartData = JSON.parse(pythonOutput);
-            console.log('Parsed chart data:', chartData);
+            //console.log('Parsed chart data:', chartData);
             res.json({
                 hours: chartData.hours,
                 targets: chartData.targets,

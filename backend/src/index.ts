@@ -11,7 +11,7 @@ app.use(cors()); // Permette al frontend di chiamare il backend
 app.use(express.json());
 
 // Helper function to run Python scripts
-const runPythonScript = async (scriptName: string): Promise<any> => {
+const runPythonScript = async (scriptName: string, args: string[] = []): Promise<any> => {
   const scriptPath = path.join(__dirname, '../python-scripts');
   console.log('Script path:', scriptPath);
   console.log('Running script:', scriptName);
@@ -19,10 +19,11 @@ const runPythonScript = async (scriptName: string): Promise<any> => {
   
   const options = {
     scriptPath: scriptPath,
-    pythonPath: 'python', // You might need to specify the full Python path
+    pythonPath: 'python',
+    args: args
   };
-  
-  try { // Esegue lo script Python e cattura l'output
+
+  try {
     const result = await PythonShell.run(scriptName, options);
     console.log('Python script executed successfully, output:', result);
     return { success: true, data: result };
@@ -34,20 +35,29 @@ const runPythonScript = async (scriptName: string): Promise<any> => {
 };
 
 // API Routes
-app.get('/api/doppler', async (_req: Request, res: Response) => {
-  console.log('Doppler endpoint called');
+app.get('/api/doppler', async (req: Request, res: Response) => {
+  //console.log('Doppler endpoint chiamato');
   try {
-    console.log('Running Python script: doppler.py');
-    const result = await runPythonScript('doppler.py');
-    console.log('Python script result:', result);
-    
+    // Prendi i parametri dalla query string, con fallback ai default
+    const max_frames = req.query.max_frames ? String(req.query.max_frames) : '2000'; // Default ora 2000
+    const frame_index = req.query.frame_index ? String(req.query.frame_index) : '0';
+    const target_type = req.query.target_type ? String(req.query.target_type) : '1';
+    const args = [target_type, frame_index, max_frames];
+    //console.log('Eseguo doppler.py con args:', args);
+    const result = await runPythonScript('doppler.py', args);
+
     if (result.success) {
       // Parse the JSON output from Python script
       const pythonOutput = result.data.join('');
-      console.log('Python output:', pythonOutput);
-      const dopplerData = JSON.parse(pythonOutput);
-      console.log('Parsed doppler data:', dopplerData);
-      
+      let dopplerData;
+      try {
+        dopplerData = JSON.parse(pythonOutput);
+      } catch (e) {
+        console.error('Errore parsing JSON output:', e);
+        return res.status(500).json({ error: 'Errore parsing JSON output' });
+      }
+      // Log solo info essenziali
+      //console.log('Doppler data ricevuti correttamente. Frame totali:', dopplerData["Range-Doppler Map"] ? dopplerData["Range-Doppler Map"].length : 0);
       res.json({
         "Range-Doppler Map": dopplerData["Range-Doppler Map"]
       });
@@ -94,19 +104,19 @@ app.get('/api/targets', async (_req: Request, res: Response) => {
 });
 
 app.get('/api/chart-data', async (_req: Request, res: Response) => {
-  console.log('Chart data endpoint called');
+  //console.log('Chart data endpoint called');
   try {
-    console.log('Running Python script: chart-data.py');
+    //console.log('Running Python script: chart-data.py');
     const result = await runPythonScript('chart-data.py');
-    console.log('Python script result:', result);
-    
+    //console.log('Python script result:', result);
+
     if (result.success) {
       // Parse the JSON output from Python script
       const pythonOutput = result.data.join('');
-      console.log('Python output:', pythonOutput);
+      //console.log('Python output:', pythonOutput);
       const chartData = JSON.parse(pythonOutput);
-      console.log('Parsed chart data:', chartData);
-      
+      //console.log('Parsed chart data:', chartData);
+
       res.json({
         hours: chartData.hours,
         targets: chartData.targets,

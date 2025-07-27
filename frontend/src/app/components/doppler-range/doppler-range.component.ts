@@ -42,7 +42,7 @@ export class DopplerRangeComponent implements OnInit, OnDestroy {
     console.log('Fetching Range-Doppler Map data...');
     this.dataService.getDoppler().subscribe({
       next: (data: DopplerData) => {
-        console.log('Range-Doppler Map data received:', data);
+        console.log('Range-Doppler Map data received');
         this.dopplerData = data;
         this.initializeData();
       },
@@ -94,7 +94,7 @@ export class DopplerRangeComponent implements OnInit, OnDestroy {
     
     this.maxValue = Math.max(...allValues);
     this.minValue = Math.min(...allValues);
-    console.log('Sample values:', allValues.slice(0, 10)); // Mostra i primi 10 valori
+    //console.log('Sample values:', allValues.slice(0, 10)); // Mostra i primi 10 valori
   }
 
   private showFrame(frameIndex: number): void {

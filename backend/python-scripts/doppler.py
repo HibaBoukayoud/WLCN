@@ -41,5 +41,9 @@ def extract_range_doppler(target_type=1, frame_index=0, max_frames=10):
     }
 
 if __name__ == "__main__": # Questa riga assicura che il codice venga eseguito solo se il file è eseguito direttamente, e non se viene importato in un altro script
-    rd_data = extract_range_doppler(target_type=1, frame_index=0, max_frames=50) # Chiama la funzione per estrarre i primi 50 frame con 1 target (data[1])
-    print(json.dumps(rd_data, indent=4)) # Stampa i dati estratti in formato JSON con indentazione per una migliore leggibilità
+    filepath = 'C:\\Users\\hibab\\Dropbox\\HBoukayoud\\Codes\\Dataset\\0-2000_1-2000_targets-frames_04Mar2025_16_50_35'
+    data = FR.load_data(filepath)
+    selected_frames = data[1]  # 1 = con target
+    n_frames = selected_frames.shape[0] if hasattr(selected_frames, 'shape') and len(selected_frames.shape) > 0 else 1
+    rd_data = extract_range_doppler(target_type=1, frame_index=0, max_frames=n_frames)
+    print(json.dumps(rd_data, indent=4))
