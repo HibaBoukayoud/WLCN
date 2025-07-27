@@ -5,7 +5,7 @@
 .doppler-range-container {
   display: flex;
   flex-direction: column;
-  height: 700px;
+  height: fit-content; /* Adjusted to fit content */
   padding: 20px;
   background-color: white;
   border-radius: 8px;
