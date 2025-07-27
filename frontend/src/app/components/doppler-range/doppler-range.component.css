@@ -1,3 +1,7 @@
+.btn-prev,
+.btn-next {
+  color: #111 !important;
+}
 .doppler-range-container {
   display: flex;
   flex-direction: column;
@@ -60,7 +64,7 @@
 }
 
 .control-buttons button:hover:not(:disabled) {
-  background-color: #f0f8ff;
+  background-color: #4ab6cea4;
   border-color: #00d4ff;
 }
 
