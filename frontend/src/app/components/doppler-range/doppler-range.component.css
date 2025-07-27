@@ -158,13 +158,6 @@
   height: 10px;
 }
 
-.heatmap-cell:hover {
-  transform: scale(1.5);
-  border: 1px solid #333;
-  z-index: 10;
-  position: relative;
-}
-
 /* Color Bar */
 .color-bar {
   display: flex;
@@ -176,7 +169,7 @@
 
 .color-gradient {
   width: 20px;
-  height: 500px; /* Aumentata per corrispondere all'altezza della griglia */
+  height: 340px; /* Aumentata per corrispondere all'altezza della griglia */
   background: linear-gradient(to top, 
     rgb(68, 1, 84),     /* Viola scuro */
     rgb(59, 82, 139),   /* Blu */

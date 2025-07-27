@@ -4,8 +4,7 @@
     <div class="animation-controls" *ngIf="dopplerData">
       <div class="frame-info">
         <span>Frame: {{ currentFrameIndex + 1 }} / {{ totalFrames }}</span>
-        <span>Min: {{ minValue.toFixed(2) }}</span>
-        <span>Max: {{ maxValue.toFixed(2) }}</span>
+
       </div>
       
       <div class="control-buttons">
@@ -56,11 +55,6 @@
       <!-- Color Bar Legend -->
       <div class="color-bar">
         <div class="color-gradient"></div>
-        <div class="color-labels">
-          <span>{{ minValue.toFixed(2) }}</span>
-          <span>{{ ((minValue + maxValue) / 2).toFixed(2) }}</span>
-          <span>{{ maxValue.toFixed(2) }}</span>
-        </div>
       </div>
     </div>
     
