@@ -35,6 +35,10 @@ const runPythonScript = async (scriptName) => {
 };
 // API Routes
 app.get('/api/doppler', async (_req, res) => {
+    const max_frames = req.query.max_frames ? String(req.query.max_frames) : '500';
+    const frame_index = req.query.frame_index ? String(req.query.frame_index) : '0';
+    const target_type = req.query.target_type ? String(req.query.target_type) : '1';
+    const args = [target_type, frame_index, max_frames];
     console.log('Doppler endpoint called');
     try {
         console.log('Running Python script: doppler.py');
@@ -83,10 +87,8 @@ app.get('/api/targets', async (_req, res) => {
         if (result.success) {
             
             // TODO: Process actual data from Python script
-            res.json({ count: 3, targets: [
-                    { id: 1, distance: 50, angle: 30 },
-                    { id: 2, distance: 75, angle: -15 },
-                    { id: 3, distance: 120, angle: 60 }
+            res.json({ count: 1, targets: [
+                    { id: 1, distance: 50, angle: 30 }
                 ] });
             console.log('Python script executed successfully');
         }

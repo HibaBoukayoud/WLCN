@@ -39,7 +39,7 @@ app.get('/api/doppler', async (req: Request, res: Response) => {
   //console.log('Doppler endpoint chiamato');
   try {
     // Prendi i parametri dalla query string, con fallback ai default
-    const max_frames = req.query.max_frames ? String(req.query.max_frames) : '2000'; // Default ora 2000
+    const max_frames = req.query.max_frames ? String(req.query.max_frames) : '500'; // Default ora 2000
     const frame_index = req.query.frame_index ? String(req.query.frame_index) : '0';
     const target_type = req.query.target_type ? String(req.query.target_type) : '1';
     const args = [target_type, frame_index, max_frames];
@@ -90,10 +90,8 @@ app.get('/api/targets', async (_req: Request, res: Response) => {
     const result = await runPythonScript('targets.py');
     if (result.success) {
       // TODO: Process actual data from Python script
-      res.json({ count: 3, targets: [
-        { id: 1, distance: 50, angle: 30 },
-        { id: 2, distance: 75, angle: -15 },
-        { id: 3, distance: 120, angle: 60 }
+      res.json({ count: 1, targets: [
+        { id: 1, distance: 50, angle: 30 }
       ]});
     } else {
       res.status(500).json({ error: 'Failed to execute Python script' });

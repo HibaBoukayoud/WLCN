@@ -23,15 +23,16 @@ def extract_range_doppler(target_type=1, frame_index=0, max_frames=10):
     # Converte gli array NumPy in liste Python per la serializzazione JSON
     frames_to_return = []
     
-    if isinstance(selected_frames, np.ndarray):
+    if isinstance(selected_frames, np.ndarray): # Controlla se selected_frames è un array NumPy
         if selected_frames.ndim == 3:  # Array 3D (frame, rows, cols)
             # Prendi solo i frame richiesti
-            end_index = min(frame_index + max_frames, len(selected_frames))
+            end_index = min(frame_index + max_frames, len(selected_frames)) # Limita l'indice finale al numero di frame disponibili
             for i in range(frame_index, end_index):
                 frames_to_return.append(selected_frames[i].tolist())
         elif selected_frames.ndim == 2:  # Array 2D (single frame)
             frames_to_return.append(selected_frames.tolist())
-
+    
+    
     return {
         "Range-Doppler Map": frames_to_return,
         "total_frames": len(frames_to_return),
@@ -44,6 +45,5 @@ if __name__ == "__main__": # Questa riga assicura che il codice venga eseguito s
     filepath = 'C:\\Users\\hibab\\Dropbox\\HBoukayoud\\Codes\\Dataset\\0-2000_1-2000_targets-frames_04Mar2025_16_50_35'
     data = FR.load_data(filepath)
     selected_frames = data[1]  # 1 = con target
-    n_frames = selected_frames.shape[0] if hasattr(selected_frames, 'shape') and len(selected_frames.shape) > 0 else 1
-    rd_data = extract_range_doppler(target_type=1, frame_index=0, max_frames=n_frames)
-    print(json.dumps(rd_data, indent=4))
+    rd_data = extract_range_doppler(target_type=1, frame_index=73, max_frames=73)
+    print(json.dumps(rd_data, indent=2))
