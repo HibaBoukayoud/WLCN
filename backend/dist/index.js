@@ -34,8 +34,8 @@ const runPythonScript = async (scriptName) => {
     }
 };
 // API Routes
-app.get('/api/doppler', async (_req, res) => {
-    const max_frames = req.query.max_frames ? String(req.query.max_frames) : '500';
+app.get('/api/doppler', async (req, res) => {
+    const max_frames = req.query.max_frames ? String(req.query.max_frames) : '100';
     const frame_index = req.query.frame_index ? String(req.query.frame_index) : '0';
     const target_type = req.query.target_type ? String(req.query.target_type) : '1';
     const args = [target_type, frame_index, max_frames];

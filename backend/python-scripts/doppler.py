@@ -45,5 +45,5 @@ if __name__ == "__main__": # Questa riga assicura che il codice venga eseguito s
     filepath = 'C:\\Users\\hibab\\Dropbox\\HBoukayoud\\Codes\\Dataset\\0-2000_1-2000_targets-frames_04Mar2025_16_50_35'
     data = FR.load_data(filepath)
     selected_frames = data[1]  # 1 = con target
-    rd_data = extract_range_doppler(target_type=1, frame_index=73, max_frames=73)
+    rd_data = extract_range_doppler(target_type=1, frame_index=0, max_frames=73)
     print(json.dumps(rd_data, indent=2))
