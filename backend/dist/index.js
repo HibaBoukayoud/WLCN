@@ -13,21 +13,25 @@ const PORT = process.env.PORT || 3000;
 app.use((0, cors_1.default)()); // Permette al frontend di chiamare il backend
 app.use(express_1.default.json());
 // Helper function to run Python scripts
-const runPythonScript = async (scriptName) => {
+const runPythonScript = async (scriptName, scriptArgs = []) => {
     const scriptPath = path_1.default.join(__dirname, '../python-scripts');
     console.log('Script path:', scriptPath);
     console.log('Running script:', scriptName);
     console.log('Full path:', path_1.default.join(scriptPath, scriptName));
-    const options = {
+    // args support
+    let options = {
         scriptPath: scriptPath,
-        pythonPath: 'python', // You might need to specify the full Python path
+        pythonPath: 'python',
+        args: []
     };
-    try { // Esegue lo script Python e cattura l'output
-        const result = await python_shell_1.PythonShell.run(scriptName, options);
-        //console.log('Python script executed successfully, output:', result);
-        return { success: true, data: result };
+    if (Array.isArray(scriptArgs)) {
+        options.args = scriptArgs;
     }
-    catch (error) {
+    console.log('Eseguo Python con args:', options.args);
+    try {
+        const result = await python_shell_1.PythonShell.run(scriptName, options);
+        return { success: true, data: result };
+    } catch (error) {
         console.error(`Error running ${scriptName}:`, error);
         console.error('Error details:', error.message);
         return { success: false, error: error };
@@ -35,32 +39,27 @@ const runPythonScript = async (scriptName) => {
 };
 // API Routes
 app.get('/api/doppler', async (req, res) => {
-    const max_frames = req.query.max_frames ? String(req.query.max_frames) : '100';
     const frame_index = req.query.frame_index ? String(req.query.frame_index) : '0';
     const target_type = req.query.target_type ? String(req.query.target_type) : '1';
-    const args = [target_type, frame_index, max_frames];
+    const args = [target_type, frame_index, '1']; // max_frames sempre 1 per live
     console.log('Doppler endpoint called');
     try {
         console.log('Running Python script: doppler.py');
-        const result = await runPythonScript('doppler.py');
-        //console.log('Python script result:', result);
+        const result = await runPythonScript('doppler.py', args);
         if (result.success) {
             console.log('Python script executed successfully');
-            // Parse the JSON output from Python script
             const pythonOutput = result.data.join('');
-            //console.log('Python output:', pythonOutput);
             const dopplerData = JSON.parse(pythonOutput);
-            //console.log('Parsed doppler data:', dopplerData);
             res.json({
-                "Range-Doppler Map": dopplerData["Range-Doppler Map"]
+                "Range-Doppler Map": dopplerData["Range-Doppler Map"],
+                "frame_index": frame_index,
+                "total_frames": dopplerData["available_frames"]
             });
-        }
-        else {
+        } else {
             console.error('Python script failed:', result.error);
             res.status(500).json({ error: 'Failed to execute Python script' });
         }
-    }
-    catch (error) {
+    } catch (error) {
         console.error('Error processing doppler data:', error);
         res.status(500).json({ error: 'Server error' });
     }

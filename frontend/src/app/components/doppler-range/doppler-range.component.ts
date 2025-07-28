@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { DataService } from '../../services/data.service';
 
 interface DopplerData {
@@ -10,103 +10,77 @@ interface DopplerData {
   templateUrl: './doppler-range.component.html',
   styleUrls: ['./doppler-range.component.css']
 })
+
 export class DopplerRangeComponent implements OnInit, OnDestroy {
-  dopplerData: DopplerData | null = null;
   currentFrame: number[][] = [];
   heatmapCells: Array<{row: number, col: number, value: number, color: string}> = [];
   maxValue: number = 0;
   minValue: number = 0;
-  
-  // Animation properties (come LivePlot_class.py)
   currentFrameIndex: number = 0;
   totalFrames: number = 0;
-  isAnimating: boolean = false;
+  // slideshow automatico, nessun controllo manuale
   animationInterval: any = null;
-  animationSpeed: number = 100; // 100ms come nel LivePlot_class.py
-  
-  // Grid dimensions
+  animationSpeed: number = 1000; // 1s default per simulazione live
   rows: number = 0;
   cols: number = 0;
+  liveMode: boolean = true; // Modalità live polling
 
-  constructor(private dataService: DataService) { }
+  constructor(private dataService: DataService, private cdr: ChangeDetectorRef) { }
 
   ngOnInit(): void {
-    this.fetchDopplerData();
+    this.currentFrameIndex = 0;
+    this.fetchAndAnimate();
   }
 
   ngOnDestroy(): void {
-    this.stopAnimation();
+    if (this.animationInterval) {
+      clearInterval(this.animationInterval);
+    }
   }
 
-  fetchDopplerData(): void {
-    console.log('Fetching Range-Doppler Map data...');
-    this.dataService.getDoppler().subscribe({
-      next: (data: DopplerData) => {
-        console.log('Range-Doppler Map data received');
-        this.dopplerData = data;
-        this.initializeData();
+  fetchDopplerFrame(frameIndex: number, callback?: () => void): void {
+    this.dataService.getDoppler(frameIndex).subscribe({
+      next: (data: any) => {
+        if (data && data["Range-Doppler Map"]) {
+          this.currentFrame = this.transposeMatrix(data["Range-Doppler Map"]);
+          this.rows = this.currentFrame.length;
+          this.cols = this.currentFrame[0]?.length || 0;
+          this.maxValue = Math.max(...this.currentFrame.flat());
+          this.minValue = Math.min(...this.currentFrame.flat());
+          this.generateHeatmapCells();
+          // Log per debug: mostra il primo valore del frame corrente
+          if (this.currentFrame && this.currentFrame.length > 0 && this.currentFrame[0].length > 0) {
+            console.log(`Frame ${frameIndex}: first value =`, this.currentFrame[0][0]);
+          } else {
+            console.log(`Frame ${frameIndex}: frame vuoto o non valido`);
+          }
+          this.cdr.detectChanges(); // forza aggiornamento Angular
+          if (callback) callback();
+        }
       },
       error: (error) => {
-        console.error('Error fetching Range-Doppler data:', error);
+        console.error('Error fetching Range-Doppler frame:', error);
+        if (callback) callback();
       }
     });
   }
 
-  private initializeData(): void {
-    if (!this.dopplerData || !this.dopplerData['Range-Doppler Map']) {
-      console.error('Invalid Range-Doppler Map data');
-      return;
-    }
-
-    const rangeData = this.dopplerData['Range-Doppler Map'];
-    this.totalFrames = rangeData.length;
-    console.log('Total frames:', this.totalFrames);
-    
-    if (this.totalFrames > 0) {
-      // Dimensioni originali
-      const originalRows = rangeData[0].length;
-      const originalCols = rangeData[0][0].length;
-      
-      // Dopo la trasposizione, le dimensioni si scambiano
-      this.rows = originalCols;  // Le colonne diventano righe
-      this.cols = originalRows;  // Le righe diventano colonne
-      
-      console.log('Original dimensions:', originalRows, 'x', originalCols);
-      console.log('Transposed dimensions:', this.rows, 'x', this.cols);
-      
-      // Calcola min/max su tutti i frame
-      this.calculateGlobalMinMax();
-      console.log('Value range:', this.minValue, 'to', this.maxValue);
-      
-      // Mostra il primo frame
-      this.currentFrameIndex = 0;
-      this.showFrame(this.currentFrameIndex);
-    }
-  }
-
-  private calculateGlobalMinMax(): void {
-    const allValues: number[] = [];
-    this.dopplerData!['Range-Doppler Map'].forEach(frame => {
-      frame.forEach(row => {
-        allValues.push(...row);
-      });
+  fetchAndAnimate(): void {
+    this.fetchDopplerFrame(this.currentFrameIndex, () => {
+      this.animationInterval = setInterval(() => {
+        if (this.currentFrameIndex < 1999) {
+          this.currentFrameIndex++;
+          this.fetchDopplerFrame(this.currentFrameIndex);
+        } else {
+          clearInterval(this.animationInterval);
+        }
+      }, this.animationSpeed);
     });
-    
-    this.maxValue = Math.max(...allValues);
-    this.minValue = Math.min(...allValues);
-    //console.log('Sample values:', allValues.slice(0, 10)); // Mostra i primi 10 valori
   }
 
-  private showFrame(frameIndex: number): void {
-    if (!this.dopplerData || frameIndex >= this.totalFrames) return;
-    
-    // Ottieni il frame originale
-    let frame = this.dopplerData['Range-Doppler Map'][frameIndex];
-    
-    // Applica la trasposizione per ruotare di 90 gradi
-    this.currentFrame = this.transposeMatrix(frame);
-    this.generateHeatmapCells();
-  }
+  // Nessun calcolo min/max globale, solo sul frame corrente
+
+  // Legacy methods rimossi: ora si lavora solo su un frame alla volta
 
   // Funzione per trasporre una matrice (ruota di 90 gradi)
   private transposeMatrix(matrix: number[][]): number[][] {
@@ -129,18 +103,19 @@ export class DopplerRangeComponent implements OnInit, OnDestroy {
 
   // Metodi di controllo animazione (come LivePlot_class.py)
   startAnimation(): void {
-    if (this.isAnimating) return;
-    
-    this.isAnimating = true;
     this.currentFrameIndex = 0;
-    
+    this.fetchDopplerFrame(this.currentFrameIndex);
     this.animationInterval = setInterval(() => {
-      this.updateFrame();
+      if (this.currentFrameIndex < this.totalFrames - 1) {
+        this.currentFrameIndex++;
+        this.fetchDopplerFrame(this.currentFrameIndex);
+      } else {
+        this.stopAnimation();
+      }
     }, this.animationSpeed);
   }
 
   stopAnimation(): void {
-    this.isAnimating = false;
     if (this.animationInterval) {
       clearInterval(this.animationInterval);
       this.animationInterval = null;
@@ -149,7 +124,7 @@ export class DopplerRangeComponent implements OnInit, OnDestroy {
 
   private updateFrame(): void {
     if (this.currentFrameIndex < this.totalFrames) {
-      this.showFrame(this.currentFrameIndex);
+      // La visualizzazione del frame viene gestita da fetchDopplerFrame/fetchTotalFrames
       console.log(`Frame: ${this.currentFrameIndex}`);
       this.currentFrameIndex++;
     } else {
@@ -161,14 +136,14 @@ export class DopplerRangeComponent implements OnInit, OnDestroy {
   nextFrame(): void {
     if (this.currentFrameIndex < this.totalFrames - 1) {
       this.currentFrameIndex++;
-      this.showFrame(this.currentFrameIndex);
+      this.fetchDopplerFrame(this.currentFrameIndex);
     }
   }
 
   previousFrame(): void {
     if (this.currentFrameIndex > 0) {
       this.currentFrameIndex--;
-      this.showFrame(this.currentFrameIndex);
+      this.fetchDopplerFrame(this.currentFrameIndex);
     }
   }
 
@@ -178,7 +153,7 @@ export class DopplerRangeComponent implements OnInit, OnDestroy {
       const frameIndex = +target.value;
       if (frameIndex >= 0 && frameIndex < this.totalFrames) {
         this.currentFrameIndex = frameIndex;
-        this.showFrame(this.currentFrameIndex);
+        this.fetchDopplerFrame(this.currentFrameIndex);
       }
     }
   }

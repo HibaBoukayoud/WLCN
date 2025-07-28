@@ -38,16 +38,12 @@ const runPythonScript = async (scriptName: string, args: string[] = []): Promise
 app.get('/api/doppler', async (req: Request, res: Response) => {
   //console.log('Doppler endpoint chiamato');
   try {
-    // Prendi i parametri dalla query string, con fallback ai default
-    const max_frames = req.query.max_frames ? String(req.query.max_frames) : '500'; // Default ora 2000
+    // Forza max_frames=1 per simulazione live
     const frame_index = req.query.frame_index ? String(req.query.frame_index) : '0';
     const target_type = req.query.target_type ? String(req.query.target_type) : '1';
-    const args = [target_type, frame_index, max_frames];
-    //console.log('Eseguo doppler.py con args:', args);
+    const args = [target_type, frame_index, '1'];
     const result = await runPythonScript('doppler.py', args);
-
     if (result.success) {
-      // Parse the JSON output from Python script
       const pythonOutput = result.data.join('');
       let dopplerData;
       try {
@@ -56,10 +52,11 @@ app.get('/api/doppler', async (req: Request, res: Response) => {
         console.error('Errore parsing JSON output:', e);
         return res.status(500).json({ error: 'Errore parsing JSON output' });
       }
-      // Log solo info essenziali
-      //console.log('Doppler data ricevuti correttamente. Frame totali:', dopplerData["Range-Doppler Map"] ? dopplerData["Range-Doppler Map"].length : 0);
+      // Restituisci solo il frame richiesto (come array di 1 frame)
       res.json({
-        "Range-Doppler Map": dopplerData["Range-Doppler Map"]
+        "Range-Doppler Map": dopplerData["Range-Doppler Map"],
+        "frame_index": frame_index,
+        "total_frames": dopplerData["available_frames"]
       });
     } else {
       console.error('Python script failed:', result.error);

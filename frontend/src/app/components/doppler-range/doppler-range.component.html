@@ -1,45 +1,13 @@
 <div class="doppler-range-container">
   <div class="doppler-header">
     <h3>Range-Doppler Map (Live Plot)</h3>
-    <div class="animation-controls" *ngIf="dopplerData">
-      <div class="frame-info">
-        <span>Frame: {{ currentFrameIndex + 1 }} / {{ totalFrames }}</span>
-
-      </div>
-      
-      <div class="control-buttons">
-        <button (click)="startAnimation()" [disabled]="isAnimating" class="btn-play">
-          {{ isAnimating ? 'Playing...' : 'Play' }}
-        </button>
-        <button (click)="stopAnimation()" [disabled]="!isAnimating" class="btn-stop">Stop</button>
-        <button (click)="previousFrame()" [disabled]="isAnimating || currentFrameIndex === 0" class="btn-prev">◀</button>
-        <button (click)="nextFrame()" [disabled]="isAnimating || currentFrameIndex === totalFrames - 1" class="btn-next">▶</button>
-      </div>
-      
-      <div class="frame-slider">
-        <input type="range" 
-               [min]="0" 
-               [max]="totalFrames - 1" 
-               [value]="currentFrameIndex"
-               (input)="goToFrame($event)"
-               [disabled]="isAnimating"
-               class="frame-range">
-      </div>
-      
-      <div class="speed-control">
-        <label>Speed (ms): </label>
-        <input type="number" 
-               [(ngModel)]="animationSpeed" 
-               [min]="50" 
-               [max]="1000" 
-               [step]="50"
-               [disabled]="isAnimating">
-      </div>
+    <div class="frame-info" *ngIf="heatmapCells.length > 0">
+      <span>Frame: {{ currentFrameIndex + 1 }}</span>
     </div>
   </div>
   
   <div class="doppler-visualization">
-    <div class="heatmap-container" *ngIf="dopplerData && heatmapCells.length > 0">
+    <div class="heatmap-container" *ngIf="heatmapCells.length > 0">
       <div class="heatmap-grid" 
            [style.grid-template-rows]="'repeat(' + rows + ', 1fr)'"
            [style.grid-template-columns]="'repeat(' + cols + ', 1fr)'">
@@ -59,13 +27,8 @@
     </div>
     
     <!-- Loading state -->
-    <div *ngIf="!dopplerData" class="loading-state">
+    <div *ngIf="heatmapCells.length === 0" class="loading-state">
       <p>Loading Range-Doppler data...</p>
-    </div>
-    
-    <!-- Error state -->
-    <div *ngIf="dopplerData && heatmapCells.length === 0" class="error-state">
-      <p>No data available or error loading Range-Doppler Map</p>
     </div>
   </div>
 </div>

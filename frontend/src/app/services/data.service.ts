@@ -11,9 +11,9 @@ export class DataService {
 
   constructor(private http: HttpClient) { }
 
-  getDoppler(): Observable<any> {
-    // Richiedi sempre 2000 frame
-    return this.http.get(`${this.apiUrl}/doppler?max_frames=2000`);
+  getDoppler(frameIndex: number = 0): Observable<any> {
+    // Richiedi un solo frame per simulazione live
+    return this.http.get(`${this.apiUrl}/doppler?frame_index=${frameIndex}`);
   }
 
   getAngle(): Observable<any> {
