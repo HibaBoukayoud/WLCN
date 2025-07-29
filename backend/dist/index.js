@@ -66,17 +66,31 @@ app.get('/api/doppler', async (req, res) => {
 });
 app.get('/api/angle', async (_req, res) => {
     try {
-        const result = await runPythonScript('angle.py');
+        const frame_index = _req.query.frame_index ? String(_req.query.frame_index) : '0';
+        const target_type = _req.query.target_type ? String(_req.query.target_type) : '1';
+        const args = [target_type, frame_index, '1'];
+        const result = await runPythonScript('angle.py', args);
         if (result.success) {
-            console.log('Python script executed successfully');
-            // TODO: Process actual data from Python script
-            res.json({ angle: 70, range: [-90, 90] });
-        }
-        else {
+            const pythonOutput = result.data.join('');
+            let angleData;
+            try {
+                angleData = JSON.parse(pythonOutput);
+            } catch (e) {
+                console.error('Errore parsing JSON output:', e);
+                return res.status(500).json({ error: 'Errore parsing JSON output' });
+            }
+            res.json({
+                "Angle-Range Map": angleData["Angle-Range Map"],
+                "frame_index": frame_index,
+                "total_frames": angleData["available_frames"]
+            });
+        } else {
+            console.error('Python script failed:', result.error);
             res.status(500).json({ error: 'Failed to execute Python script' });
         }
     }
     catch (error) {
+        console.error('Error processing angle data:', error);
         res.status(500).json({ error: 'Server error' });
     }
 });

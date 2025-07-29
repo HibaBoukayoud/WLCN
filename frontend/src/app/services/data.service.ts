@@ -16,8 +16,9 @@ export class DataService {
     return this.http.get(`${this.apiUrl}/doppler?frame_index=${frameIndex}`);
   }
 
-  getAngle(): Observable<any> {
-    return this.http.get(`${this.apiUrl}/angle`);
+  getAngle(frameIndex: number = 0): Observable<any> {
+    // Richiedi un solo frame per simulazione live
+    return this.http.get(`${this.apiUrl}/angle?frame_index=${frameIndex}`);
   }
 
   getTargets(): Observable<any> {
