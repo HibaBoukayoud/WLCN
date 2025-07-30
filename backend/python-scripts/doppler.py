@@ -1,4 +1,3 @@
-
 import json
 import numpy as np
 from Classes.FileReader_class import fileReader
@@ -27,10 +26,8 @@ def extract_range_doppler(frame_index=0):
 if __name__ == "__main__":
     import sys
     try:
-        # Parametri da riga di comando: target_type, frame_index
-        target_type = int(sys.argv[1]) if len(sys.argv) > 1 else 1
         frame_index = int(sys.argv[2]) if len(sys.argv) > 2 else 0
-        result = extract_range_doppler(target_type=target_type, frame_index=frame_index)
+        result = extract_range_doppler(frame_index=frame_index)
         print(json.dumps(result))
     except Exception as e:
         print(json.dumps({"error": str(e)}))

@@ -40,8 +40,7 @@ const runPythonScript = async (scriptName, scriptArgs = []) => {
 // API Routes
 app.get('/api/doppler', async (req, res) => {
     const frame_index = req.query.frame_index ? String(req.query.frame_index) : '0';
-    const target_type = req.query.target_type ? String(req.query.target_type) : '1';
-    const args = [target_type, frame_index, '1']; // max_frames sempre 1 per live
+    const args = [frame_index];
     console.log('Doppler endpoint called');
     try {
         console.log('Running Python script: doppler.py');

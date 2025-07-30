@@ -40,8 +40,7 @@ app.get('/api/doppler', async (req: Request, res: Response) => {
   try {
     // Forza max_frames=1 per simulazione live
     const frame_index = req.query.frame_index ? String(req.query.frame_index) : '0';
-    const target_type = req.query.target_type ? String(req.query.target_type) : '1';
-    const args = [target_type, frame_index, '1'];
+    const args = [frame_index];
     const result = await runPythonScript('doppler.py', args);
     if (result.success) {
       const pythonOutput = result.data.join('');
