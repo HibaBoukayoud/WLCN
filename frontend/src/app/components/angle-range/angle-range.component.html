@@ -3,7 +3,7 @@
 
 <div class="doppler-range-container">
   <div class="doppler-header">
-    <h3>Angle-Range Map (Live Plot)</h3>
+    <h3>Range-Angle Map (Live Plot)</h3>
     <div class="frame-info" *ngIf="heatmapCells.length > 0">
       <span>Frame: {{ currentFrameIndex + 1 }}</span>
     </div>
@@ -31,7 +31,7 @@
     
     <!-- Loading state -->
     <div *ngIf="heatmapCells.length === 0" class="loading-state">
-      <p>Loading Angle-Range data...</p>
+      <p>Loading Range-Angle data...</p>
     </div>
   </div>
 </div>
