@@ -12,35 +12,22 @@ def extract_range_doppler(target_type=1, frame_index=0):
         target_type: 0 per frame senza target, 1 per frame con target
         frame_index: indice del frame da restituire
     """
-    filepath = 'C:\\Users\\hibab\\Dropbox\\HBoukayoud\\Codes\\Dataset\\0-2000_1-2000_targets-frames_04Mar2025_16_50_35'
-    data = FR.load_data(filepath)
-    selected_frames = data[target_type]
-    # Gestione robusta: accetta sia np.ndarray che lista di frame
-    if isinstance(selected_frames, np.ndarray):
-        if selected_frames.ndim == 3:
-            frame = selected_frames[frame_index].tolist()
-            available = len(selected_frames)
-        elif selected_frames.ndim == 2:
-            frame = selected_frames.tolist()
-            available = 1
-        else:
-            frame = []
-            available = 0
-    elif isinstance(selected_frames, list):
-        if len(selected_frames) > 0 and isinstance(selected_frames[0], (np.ndarray, list)):
-            frame = selected_frames[frame_index]
-            if isinstance(frame, np.ndarray):
-                frame = frame.tolist()
-            available = len(selected_frames)
-        else:
-            frame = selected_frames
-            available = 1
-    else:
-        frame = []
-        available = 0
+    filepath = r'C:\Users\hibab\Desktop\Dataset'
+    name='1_targets-2000_28Jul2025_14_31_03'
+    data = FR.load_data(name, filepath)
+    target_type = [int(name[0])]
+    selected_frames = np.array(data['beforeClutterMitig']['RDA_list'])
+    available = len(selected_frames)
+    frame=selected_frames[frame_index]
+    tmp = np.fft.fft(frame, axis=0)
+    tmp = np.fft.fftshift(np.fft.fft(tmp, axis = 1), axes=1)
+    tmp = np.fft.fftshift(np.fft.fft(tmp, axis = 2), axes=2)
+    RDA = abs(tmp)
+    RD = RDA.mean(axis=2)
+
     return {
-        "Range-Doppler Map": frame,
-        "total_frames": 1,
+        "Range-Doppler Map": RD.tolist(),
+        "total_frames": available,
         "target_type": target_type,
         "frame_index": frame_index,
         "available_frames": available
