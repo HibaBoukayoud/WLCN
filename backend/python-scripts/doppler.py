@@ -16,18 +16,33 @@ def extract_range_doppler(target_type=1, frame_index=0):
     name='1_targets-2000_28Jul2025_14_31_03'
     data = FR.load_data(name, filepath)
     target_type = [int(name[0])]
-    selected_frames = np.array(data['beforeClutterMitig']['RDA_list'])
-    available = len(selected_frames)
-    frame=selected_frames[frame_index]
-    tmp = np.fft.fft(frame, axis=0)
-    tmp = np.fft.fftshift(np.fft.fft(tmp, axis = 1), axes=1)
-    tmp = np.fft.fftshift(np.fft.fft(tmp, axis = 2), axes=2)
-    RDA = abs(tmp)
-    RD = RDA.mean(axis=2)
-
+    selected_frames = np.array(data['beforeClutterMitig']['RD_list'])
+    # Gestione robusta: accetta sia np.ndarray che lista di frame
+    if isinstance(selected_frames, np.ndarray):
+        if selected_frames.ndim == 3:
+            frame = selected_frames[frame_index].tolist()
+            available = len(selected_frames)
+        elif selected_frames.ndim == 2:
+            frame = selected_frames.tolist()
+            available = 1
+        else:
+            frame = []
+            available = 0
+    elif isinstance(selected_frames, list):
+        if len(selected_frames) > 0 and isinstance(selected_frames[0], (np.ndarray, list)):
+            frame = selected_frames[frame_index]
+            if isinstance(frame, np.ndarray):
+                frame = frame.tolist()
+            available = len(selected_frames)
+        else:
+            frame = selected_frames
+            available = 1
+    else:
+        frame = []
+        available = 0
     return {
-        "Range-Doppler Map": RD.tolist(),
-        "total_frames": available,
+        "Range-Doppler Map": frame,
+        "total_frames": 1,
         "target_type": target_type,
         "frame_index": frame_index,
         "available_frames": available
