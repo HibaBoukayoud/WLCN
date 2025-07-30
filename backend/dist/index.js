@@ -41,25 +41,36 @@ const runPythonScript = async (scriptName, scriptArgs = []) => {
 app.get('/api/doppler', async (req, res) => {
     const frame_index = req.query.frame_index ? String(req.query.frame_index) : '0';
     const args = [frame_index];
-    console.log('Doppler endpoint called');
+    console.log('[BACKEND] /api/doppler chiamato. Frame richiesto:', frame_index, 'Args:', args);
     try {
-        console.log('Running Python script: doppler.py');
+        console.log('[BACKEND] Avvio Python script: doppler.py con args:', args);
         const result = await runPythonScript('doppler.py', args);
         if (result.success) {
-            console.log('Python script executed successfully');
+            console.log('[BACKEND] Python script eseguito con successo. Output:', result.data);
             const pythonOutput = result.data.join('');
-            const dopplerData = JSON.parse(pythonOutput);
+            let dopplerData;
+            try {
+                dopplerData = JSON.parse(pythonOutput);
+            } catch (e) {
+                console.error('[BACKEND] Errore parsing JSON output:', e, 'Output:', pythonOutput);
+                return res.status(500).json({ error: 'Errore parsing JSON output' });
+            }
+            console.log('[BACKEND] Risposta Doppler inviata:', {
+                "Range-Doppler Map": dopplerData["Range-Doppler Map"],
+                "frame_index": frame_index,
+                "total_frames": dopplerData["available_frames"]
+            });
             res.json({
                 "Range-Doppler Map": dopplerData["Range-Doppler Map"],
                 "frame_index": frame_index,
                 "total_frames": dopplerData["available_frames"]
             });
         } else {
-            console.error('Python script failed:', result.error);
+            console.error('[BACKEND] Python script fallito:', result.error);
             res.status(500).json({ error: 'Failed to execute Python script' });
         }
     } catch (error) {
-        console.error('Error processing doppler data:', error);
+        console.error('[BACKEND] Errore processing doppler data:', error);
         res.status(500).json({ error: 'Server error' });
     }
 });

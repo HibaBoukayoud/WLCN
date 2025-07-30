@@ -17,7 +17,7 @@ def extract_range_doppler(frame_index=0):
     selected_frames = np.array(data['beforeClutterMitig']['RD_list'])
     # Gestione robusta: accetta sia np.ndarray che lista di frame
     return {
-        "Range-Doppler Map": list(selected_frames[frame_index]),
+        "Range-Doppler Map": selected_frames[frame_index].tolist(),
         "total_frames": 1,
         "frame_index": frame_index,
         "available_frames": selected_frames.shape[0]

@@ -33,8 +33,10 @@ export class DopplerRangeComponent implements OnInit, OnDestroy {
   }
 
   fetchDopplerFrame(frameIndex: number, callback?: () => void): void {
+    console.log('[FRONTEND] Richiesta frame Doppler:', frameIndex);
     this.dataService.getDoppler(frameIndex).subscribe({
       next: (data: any) => {
+        console.log('[FRONTEND] Ricevuto frame Doppler:', frameIndex, 'Data:', data);
         if (data && data["Range-Doppler Map"]) {
           this.totalFrames = data["available_frames"] || 1;
           const map = data["Range-Doppler Map"];
@@ -73,13 +75,15 @@ export class DopplerRangeComponent implements OnInit, OnDestroy {
             }
           }
           this.heatmapCells = flat;
+          console.log('[FRONTEND] Aggiornata heatmapCells, frame:', frameIndex, 'cells:', flat.length);
           if (callback) callback();
         } else {
           this.heatmapCells = [];
+          console.warn('[FRONTEND] Nessun dato Range-Doppler Map per frame:', frameIndex);
         }
       },
       error: (error) => {
-        console.error('Error fetching Range-Doppler frame:', error);
+        console.error('[FRONTEND] Errore fetch Range-Doppler frame:', frameIndex, error);
         this.heatmapCells = [];
         if (callback) callback();
       }
