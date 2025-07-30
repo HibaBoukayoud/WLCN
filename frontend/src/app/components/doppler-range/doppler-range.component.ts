@@ -91,15 +91,21 @@ export class DopplerRangeComponent implements OnInit, OnDestroy {
   }
 
   fetchAndAnimate(): void {
+    if (this.animationInterval) {
+      clearInterval(this.animationInterval);
+    }
+    // Carica subito il primo frame, poi avvia animazione solo dopo aver ricevuto totalFrames
     this.fetchDopplerFrame(this.currentFrameIndex, () => {
-      this.animationInterval = setInterval(() => {
-        if (this.currentFrameIndex < this.totalFrames - 1) {
-          this.currentFrameIndex++;
+      if (this.totalFrames > 1) {
+        this.animationInterval = setInterval(() => {
+          if (this.currentFrameIndex < this.totalFrames - 1) {
+            this.currentFrameIndex++;
+          } else {
+            this.currentFrameIndex = 0;
+          }
           this.fetchDopplerFrame(this.currentFrameIndex);
-        } else {
-          clearInterval(this.animationInterval);
-        }
-      }, this.animationSpeed);
+        }, 10); // 10ms tra i frame
+      }
     });
   }
 

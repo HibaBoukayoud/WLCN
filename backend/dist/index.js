@@ -46,20 +46,15 @@ app.get('/api/doppler', async (req, res) => {
         console.log('[BACKEND] Avvio Python script: doppler.py con args:', args);
         const result = await runPythonScript('doppler.py', args);
         if (result.success) {
-            console.log('[BACKEND] Python script eseguito con successo. Output:', result.data);
+            console.log('[BACKEND] Python script eseguito con successo.');
             const pythonOutput = result.data.join('');
             let dopplerData;
             try {
                 dopplerData = JSON.parse(pythonOutput);
             } catch (e) {
-                console.error('[BACKEND] Errore parsing JSON output:', e, 'Output:', pythonOutput);
+                console.error('Errore parsing JSON output:', e);
                 return res.status(500).json({ error: 'Errore parsing JSON output' });
             }
-            console.log('[BACKEND] Risposta Doppler inviata:', {
-                "Range-Doppler Map": dopplerData["Range-Doppler Map"],
-                "frame_index": frame_index,
-                "total_frames": dopplerData["available_frames"]
-            });
             res.json({
                 "Range-Doppler Map": dopplerData["Range-Doppler Map"],
                 "frame_index": frame_index,
