@@ -1,8 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { DataService } from '../../services/data.service';
-// @ts-ignore
-import * as Plotly from 'plotly.js-dist-min';
-// Import PlotlyModule in app.module.ts
+
 
 @Component({
   selector: 'app-doppler-range',
@@ -16,6 +14,10 @@ export class DopplerRangeComponent implements OnInit, OnDestroy {
   totalFrames: number = 0;
   animationInterval: any = null;
   animationSpeed: number = 1000;
+
+  heatmapCells: Array<{row: number, col: number, value: number, color: string}> = [];
+  rows: number = 0;
+  cols: number = 0;
 
   constructor(private dataService: DataService) { }
 
@@ -35,21 +37,50 @@ export class DopplerRangeComponent implements OnInit, OnDestroy {
       next: (data: any) => {
         if (data && data["Range-Doppler Map"]) {
           this.totalFrames = data["available_frames"] || 1;
-          this.plotData = [{
-            z: data["Range-Doppler Map"],
-            type: 'heatmap',
-            colorscale: 'Viridis'
-          }];
-          this.plotLayout = {
-            title: `Range-Doppler Map – Frame ${frameIndex}`,
-            xaxis: { title: 'Speed bins' },
-            yaxis: { title: 'Distance bins' }
-          };
+          const map = data["Range-Doppler Map"];
+          this.rows = map.length;
+          this.cols = map[0]?.length || 0;
+          // Flatten and colorize
+          const flat: Array<{row: number, col: number, value: number, color: string}> = [];
+          let min = Infinity, max = -Infinity;
+          for (let r = 0; r < this.rows; r++) {
+            for (let c = 0; c < this.cols; c++) {
+              const v = map[r][c];
+              if (v < min) min = v;
+              if (v > max) max = v;
+            }
+          }
+          // Simple Viridis color scale (linear interpolation)
+          function viridisColor(val: number, min: number, max: number): string {
+            const t = (val - min) / (max - min || 1);
+            // Approximate viridis gradient
+            const stops = [
+              [68, 1, 84], [71, 44, 122], [59, 81, 139], [44, 113, 142],
+              [33, 144, 141], [39, 173, 129], [92, 200, 99], [170, 220, 50], [253, 231, 37]
+            ];
+            const idx = Math.floor(t * (stops.length - 1));
+            const [r, g, b] = stops[idx];
+            return `rgb(${r},${g},${b})`;
+          }
+          for (let r = 0; r < this.rows; r++) {
+            for (let c = 0; c < this.cols; c++) {
+              flat.push({
+                row: r,
+                col: c,
+                value: map[r][c],
+                color: viridisColor(map[r][c], min, max)
+              });
+            }
+          }
+          this.heatmapCells = flat;
           if (callback) callback();
+        } else {
+          this.heatmapCells = [];
         }
       },
       error: (error) => {
         console.error('Error fetching Range-Doppler frame:', error);
+        this.heatmapCells = [];
         if (callback) callback();
       }
     });

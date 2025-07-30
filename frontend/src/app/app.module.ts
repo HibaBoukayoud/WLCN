@@ -4,6 +4,12 @@ import { HttpClientModule } from '@angular/common/http';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { AppRoutingModule } from './app-routing.module';
+
+import * as PlotlyJS from 'plotly.js-dist-min';
+import { PlotlyModule } from 'angular-plotly.js';
+
+/*  ←— v6 uses a static property rather than forRoot()  */
+PlotlyModule.plotlyjs = PlotlyJS;
 import { AppComponent } from './app.component';
 import { NavbarComponent } from './components/navbar/navbar.component';
 import { FooterComponent } from './components/footer/footer.component';
@@ -31,7 +37,8 @@ import { TargetCounterComponent } from './components/target-counter/target-count
     AppRoutingModule,
     RouterModule,
     HttpClientModule,
-    FormsModule
+    FormsModule,
+    PlotlyModule
   ],
   providers: [],
   bootstrap: [AppComponent]
