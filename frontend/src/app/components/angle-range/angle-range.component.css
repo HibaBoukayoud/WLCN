@@ -1,5 +1,4 @@
 
-.btn-prev,
 .btn-next {
   color: #111 !important;
 }
@@ -38,6 +37,49 @@
 .frame-info {
   display: flex;
   gap: 16px;
+
+/* Copia identica da doppler-range.component.css */
+.btn-prev,
+.btn-next {
+  color: #111 !important;
+}
+.doppler-range-container {
+  display: flex;
+  flex-direction: column;
+  height: fit-content;
+  padding: 20px;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.doppler-header {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 16px;
+  border-bottom: 2px solid #f0f0f0;
+  padding-bottom: 16px;
+}
+
+.doppler-header h3 {
+  margin: 0;
+  color: #0a2540;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.animation-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.frame-info {
+  display: flex;
+  gap: 16px;
+  font-size: 12px;
+}
   font-size: 12px;
   color: #666;
 }

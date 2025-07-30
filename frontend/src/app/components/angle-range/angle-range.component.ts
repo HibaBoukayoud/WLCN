@@ -1,5 +1,5 @@
 
-import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { DataService } from '../../services/data.service';
 
 @Component({
@@ -8,22 +8,22 @@ import { DataService } from '../../services/data.service';
   styleUrls: ['./angle-range.component.css']
 })
 export class AngleRangeComponent implements OnInit, OnDestroy {
-  currentAngleFrame: number[][] = [];
-  angleHeatmapCells: Array<{row: number, col: number, value: number, color: string}> = [];
-  maxValue: number = 0;
-  minValue: number = 0;
-  currentAngleFrameIndex: number = 0;
-  totalAngleFrames: number = 0;
+  plotData: any[] = [];
+  plotLayout: any = {};
+  currentFrameIndex: number = 0;
+  totalFrames: number = 0;
   animationInterval: any = null;
   animationSpeed: number = 1000;
+
+  heatmapCells: Array<{row: number, col: number, value: number, color: string}> = [];
   rows: number = 0;
   cols: number = 0;
 
-  constructor(private dataService: DataService, private cdr: ChangeDetectorRef) { }
+  constructor(private dataService: DataService) { }
 
   ngOnInit(): void {
-    this.currentAngleFrameIndex = 0;
-    this.fetchAndAnimateAngle();
+    this.currentFrameIndex = 0;
+    this.fetchAndAnimate();
   }
 
   ngOnDestroy(): void {
@@ -33,100 +33,76 @@ export class AngleRangeComponent implements OnInit, OnDestroy {
   }
 
   fetchAngleFrame(frameIndex: number, callback?: () => void): void {
+    console.log('[FRONTEND] Richiesta frame Angle:', frameIndex);
     this.dataService.getAngle(frameIndex).subscribe({
       next: (data: any) => {
+        console.log('[FRONTEND] Ricevuto frame Angle:', frameIndex, 'Data:', data);
         if (data && data["Angle-Range Map"]) {
-          this.currentAngleFrame = this.transposeMatrix(data["Angle-Range Map"]);
-          this.rows = this.currentAngleFrame.length;
-          this.cols = this.currentAngleFrame[0]?.length || 0;
-          this.maxValue = Math.max(...this.currentAngleFrame.flat());
-          this.minValue = Math.min(...this.currentAngleFrame.flat());
-          this.generateAngleHeatmapCells();
-          this.cdr.detectChanges();
+          this.totalFrames = data["available_frames"] || 1;
+          const map = data["Angle-Range Map"];
+          this.rows = map.length;
+          this.cols = map[0]?.length || 0;
+          // Flatten and colorize
+          const flat: Array<{row: number, col: number, value: number, color: string}> = [];
+          let min = Infinity, max = -Infinity;
+          for (let r = 0; r < this.rows; r++) {
+            for (let c = 0; c < this.cols; c++) {
+              const v = map[r][c];
+              if (v < min) min = v;
+              if (v > max) max = v;
+            }
+          }
+          function viridisColor(val: number, min: number, max: number): string {
+            const t = (val - min) / (max - min || 1);
+            const stops = [
+              [68, 1, 84], [71, 44, 122], [59, 81, 139], [44, 113, 142],
+              [33, 144, 141], [39, 173, 129], [92, 200, 99], [170, 220, 50], [253, 231, 37]
+            ];
+            const idx = Math.floor(t * (stops.length - 1));
+            const [r, g, b] = stops[idx];
+            return `rgb(${r},${g},${b})`;
+          }
+          for (let r = 0; r < this.rows; r++) {
+            for (let c = 0; c < this.cols; c++) {
+              flat.push({
+                row: r,
+                col: c,
+                value: map[r][c],
+                color: viridisColor(map[r][c], min, max)
+              });
+            }
+          }
+          this.heatmapCells = flat;
+          console.log('[FRONTEND] Aggiornata heatmapCells, frame:', frameIndex, 'cells:', flat.length);
           if (callback) callback();
+        } else {
+          this.heatmapCells = [];
+          console.warn('[FRONTEND] Nessun dato Angle-Range Map per frame:', frameIndex);
         }
       },
       error: (error) => {
-        console.error('Error fetching Angle-Range frame:', error);
+        console.error('[FRONTEND] Errore fetch Angle-Range frame:', frameIndex, error);
+        this.heatmapCells = [];
         if (callback) callback();
       }
     });
   }
 
-  fetchAndAnimateAngle(): void {
-    this.fetchAngleFrame(this.currentAngleFrameIndex, () => {
-      this.animationInterval = setInterval(() => {
-        if (this.currentAngleFrameIndex < 1999) {
-          this.currentAngleFrameIndex++;
-          this.fetchAngleFrame(this.currentAngleFrameIndex);
-        } else {
-          clearInterval(this.animationInterval);
-        }
-      }, this.animationSpeed);
-    });
-  }
-
-  private transposeMatrix(matrix: number[][]): number[][] {
-    if (!matrix || matrix.length === 0) return matrix;
-    const rows = matrix.length;
-    const cols = matrix[0].length;
-    const transposed: number[][] = [];
-    for (let j = 0; j < cols; j++) {
-      transposed[j] = [];
-      for (let i = 0; i < rows; i++) {
-        transposed[j][i] = matrix[i][j];
+  fetchAndAnimate(): void {
+    if (this.animationInterval) {
+      clearInterval(this.animationInterval);
+    }
+    this.fetchAngleFrame(this.currentFrameIndex, () => {
+      if (this.totalFrames > 1) {
+        this.animationInterval = setInterval(() => {
+          if (this.currentFrameIndex < this.totalFrames - 1) {
+            this.currentFrameIndex++;
+          } else {
+            this.currentFrameIndex = 0;
+          }
+          this.fetchAngleFrame(this.currentFrameIndex);
+        }, 10);
       }
-    }
-    return transposed;
-  }
-
-  private generateAngleHeatmapCells(): void {
-    if (!this.currentAngleFrame || this.currentAngleFrame.length === 0) {
-      console.error('Invalid current angle frame data');
-      return;
-    }
-    this.angleHeatmapCells = [];
-    this.currentAngleFrame.forEach((row: number[], rowIndex: number) => {
-      row.forEach((value: number, colIndex: number) => {
-        const normalizedValue = this.maxValue !== this.minValue 
-          ? (value - this.minValue) / (this.maxValue - this.minValue)
-          : 0;
-        const color = this.getViridisColor(normalizedValue);
-        this.angleHeatmapCells.push({
-          row: rowIndex,
-          col: colIndex,
-          value: value,
-          color: color
-        });
-      });
     });
-  }
-
-  private getViridisColor(normalizedValue: number): string {
-    if (normalizedValue <= 0.25) {
-      const t = normalizedValue / 0.25;
-      const r = Math.round(68 + (59 - 68) * t);
-      const g = Math.round(1 + (82 - 1) * t);
-      const b = Math.round(84 + (139 - 84) * t);
-      return `rgb(${r}, ${g}, ${b})`;
-    } else if (normalizedValue <= 0.5) {
-      const t = (normalizedValue - 0.25) / 0.25;
-      const r = Math.round(59 + (33 - 59) * t);
-      const g = Math.round(82 + (144 - 82) * t);
-      const b = Math.round(139 + (140 - 139) * t);
-      return `rgb(${r}, ${g}, ${b})`;
-    } else if (normalizedValue <= 0.75) {
-      const t = (normalizedValue - 0.5) / 0.25;
-      const r = Math.round(33 + (94 - 33) * t);
-      const g = Math.round(144 + (201 - 144) * t);
-      const b = Math.round(140 + (98 - 140) * t);
-      return `rgb(${r}, ${g}, ${b})`;
-    } else {
-      const t = (normalizedValue - 0.75) / 0.25;
-      const r = Math.round(94 + (253 - 94) * t);
-      const g = Math.round(201 + (231 - 201) * t);
-      const b = Math.round(98 + (37 - 98) * t);
-      return `rgb(${r}, ${g}, ${b})`;
-    }
   }
 }

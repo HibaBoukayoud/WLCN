@@ -70,8 +70,7 @@ app.get('/api/doppler', async (req: Request, res: Response) => {
 app.get('/api/angle', async (_req: Request, res: Response) => {
   try {
     const frame_index = _req.query.frame_index ? String(_req.query.frame_index) : '0';
-    const target_type = _req.query.target_type ? String(_req.query.target_type) : '1';
-    const args = [target_type, frame_index];
+    const args = [frame_index];
     const result = await runPythonScript('angle.py', args);
     if (result.success) {
       const pythonOutput = result.data.join('');

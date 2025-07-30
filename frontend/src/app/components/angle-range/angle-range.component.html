@@ -1,24 +1,25 @@
 
 
+
 <div class="doppler-range-container">
   <div class="doppler-header">
     <h3>Angle-Range Map (Live Plot)</h3>
-    <div class="frame-info" *ngIf="angleHeatmapCells.length > 0">
-      <span>Frame: {{ currentAngleFrameIndex + 1 }}</span>
+    <div class="frame-info" *ngIf="heatmapCells.length > 0">
+      <span>Frame: {{ currentFrameIndex + 1 }}</span>
     </div>
   </div>
   
   <div class="doppler-visualization">
-    <div class="heatmap-container" *ngIf="angleHeatmapCells.length > 0">
+    <div class="heatmap-container" *ngIf="heatmapCells.length > 0">
       <div class="heatmap-grid" 
            [style.grid-template-rows]="'repeat(' + rows + ', 1fr)'"
            [style.grid-template-columns]="'repeat(' + cols + ', 1fr)'">
-        <div *ngFor="let cell of angleHeatmapCells" 
+        <div *ngFor="let cell of heatmapCells" 
              class="heatmap-cell"
              [style.background-color]="cell.color"
              [style.grid-row]="cell.row + 1"
              [style.grid-column]="cell.col + 1"
-             [title]="'Frame: ' + (currentAngleFrameIndex + 1) + ', Row: ' + cell.row + ', Col: ' + cell.col + ', Value: ' + cell.value.toFixed(4)">
+             [title]="'Frame: ' + (currentFrameIndex + 1) + ', Row: ' + cell.row + ', Col: ' + cell.col + ', Value: ' + cell.value.toFixed(4)">
         </div>
       </div>
       
@@ -29,7 +30,7 @@
     </div>
     
     <!-- Loading state -->
-    <div *ngIf="angleHeatmapCells.length === 0" class="loading-state">
+    <div *ngIf="heatmapCells.length === 0" class="loading-state">
       <p>Loading Angle-Range data...</p>
     </div>
   </div>

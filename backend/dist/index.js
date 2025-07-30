@@ -69,13 +69,15 @@ app.get('/api/doppler', async (req, res) => {
         res.status(500).json({ error: 'Server error' });
     }
 });
-app.get('/api/angle', async (_req, res) => {
+app.get('/api/angle', async (req, res) => {
+    const frame_index = req.query.frame_index ? String(req.query.frame_index) : '0';
+    const args = [frame_index];
+    console.log('[BACKEND] /api/angle chiamato. Frame richiesto:', frame_index, 'Args:', args);
     try {
-        const frame_index = _req.query.frame_index ? String(_req.query.frame_index) : '0';
-        const target_type = _req.query.target_type ? String(_req.query.target_type) : '1';
-        const args = [target_type, frame_index, '1'];
+        console.log('[BACKEND] Avvio Python script: angle.py con args:', args);
         const result = await runPythonScript('angle.py', args);
         if (result.success) {
+            console.log('[BACKEND] Python script eseguito con successo.');
             const pythonOutput = result.data.join('');
             let angleData;
             try {
@@ -90,12 +92,11 @@ app.get('/api/angle', async (_req, res) => {
                 "total_frames": angleData["available_frames"]
             });
         } else {
-            console.error('Python script failed:', result.error);
+            console.error('[BACKEND] Python script fallito:', result.error);
             res.status(500).json({ error: 'Failed to execute Python script' });
         }
-    }
-    catch (error) {
-        console.error('Error processing angle data:', error);
+    } catch (error) {
+        console.error('[BACKEND] Errore processing angle data:', error);
         res.status(500).json({ error: 'Server error' });
     }
 });
