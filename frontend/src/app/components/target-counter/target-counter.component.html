@@ -1,8 +1,8 @@
 <div class="target-counter-container">
   <div class="targets-info">
     <div class="counter-card">
-      <div class="counter-title">Detected Targets</div>
-      <div class="counter-value">{{ targetData?.count || 0 }}</div>
+      <div class="counter-title">Predicted Targets (CNN, frame {{ frameIndex }})</div>
+      <div class="counter-value">{{ targetData?.predicted_targets ?? '...' }}</div>
     </div>
   </div>
 </div>

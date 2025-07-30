@@ -2,7 +2,8 @@ import json
 import numpy as np
 from Classes.FileReader_class import fileReader
 FR = fileReader()
-
+import numpy as np
+import tensorflow as tf
 
 def extract_range_doppler(frame_index=0):
     """

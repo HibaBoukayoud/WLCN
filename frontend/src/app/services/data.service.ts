@@ -21,8 +21,9 @@ export class DataService {
     return this.http.get(`${this.apiUrl}/angle?frame_index=${frameIndex}`);
   }
 
-  getTargets(): Observable<any> {
-    return this.http.get(`${this.apiUrl}/targets`);
+  getTargets(frameIndex: number = 0): Observable<any> {
+    // Richiedi la prediction per uno specifico frame
+    return this.http.get(`${this.apiUrl}/targets?frame_index=${frameIndex}`);
   }
 
   getChartData(): Observable<any> {

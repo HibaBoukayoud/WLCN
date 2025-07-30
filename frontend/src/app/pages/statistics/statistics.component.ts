@@ -17,12 +17,29 @@ interface ChartData {
 export class StatisticsComponent implements OnInit {
   chartData: ChartData | null = null;
   chartPoints: string = '';
+  predictedTargets: number | null = null;
+  frameIndex: number = 0;
 
   constructor(private dataService: DataService) { }
 
   ngOnInit(): void {
     console.log('Statistics component initialized');
     this.loadChartData();
+    this.loadPredictedTargets();
+  }
+
+  private loadPredictedTargets(): void {
+    // Chiedi la prediction per lo stesso frameIndex usato per la visualizzazione
+    this.dataService.getTargets(this.frameIndex).subscribe({
+      next: (data: any) => {
+        console.log('Predicted targets data:', data);
+        this.predictedTargets = data.predicted_targets;
+      },
+      error: (error) => {
+        console.error('Error fetching predicted targets:', error);
+        this.predictedTargets = null;
+      }
+    });
   }
 
   private loadChartData(): void {

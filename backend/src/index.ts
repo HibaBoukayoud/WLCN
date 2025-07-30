@@ -96,14 +96,24 @@ app.get('/api/angle', async (_req: Request, res: Response) => {
   }
 });
 
-app.get('/api/targets', async (_req: Request, res: Response) => {
+app.get('/api/targets', async (req: Request, res: Response) => {
+  // Ricevi frame_index come query param, default 0
+  const frame_index = req.query.frame_index ? String(req.query.frame_index) : '0';
+  const args = [frame_index];
   try {
-    const result = await runPythonScript('targets.py');
+    const result = await runPythonScript('targets.py', args);
     if (result.success) {
-      // TODO: Process actual data from Python script
-      res.json({ count: 1, targets: [
-        { id: 1, distance: 50, angle: 30 }
-      ]});
+      const pythonOutput = result.data.join('');
+      let targetsData;
+      try {
+        targetsData = JSON.parse(pythonOutput);
+      } catch (e) {
+        console.error('Errore parsing JSON output:', e);
+        return res.status(500).json({ error: 'Errore parsing JSON output' });
+      }
+      // targetsData: { frame_index, predicted_targets }
+      res.json(targetsData);
+      console.log('Python script executed successfully');
     } else {
       res.status(500).json({ error: 'Failed to execute Python script' });
     }
