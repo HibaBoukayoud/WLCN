@@ -1,13 +1,3 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-
-"""
-Targets data generator stub
-"""
-
-import json
-import random
-
 import json
 import numpy as np
 from Classes.FileReader_class import fileReader
